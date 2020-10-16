@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "327886044350",
+    "firebase_url": "https://makane-57aaa.firebaseio.com",
+    "project_id": "makane-57aaa",
+    "storage_bucket": "makane-57aaa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:327886044350:android:e8ae4aa996eb12bca2f2ef",
+        "android_client_info": {
+          "package_name": "com.makane"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "327886044350-r477akov78m00iv2f400p3n5sc2g1p8v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.makane",
+            "certificate_hash": "2a4211084e21193eceb041912c37ec384d96a05e"
+          }
+        },
+        {
+          "client_id": "327886044350-hs06gobmm6t2publ6930svqh2hcf346b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSAo4HUoI7F2oGm10K4pPPTwzWrZOJ33M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "327886044350-hs06gobmm6t2publ6930svqh2hcf346b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

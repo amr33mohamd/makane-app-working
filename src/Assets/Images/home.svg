@@ -1,0 +1,30 @@
+<svg id="Homepage_BG_ENG_SVG" data-name="Homepage BG ENG SVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="414" height="323" viewBox="0 0 414 323">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#ffefef"/>
+    </linearGradient>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_417" data-name="Rectangle 417" width="161.657" height="56.98" fill="none"/>
+    </clipPath>
+  </defs>
+  <rect id="Rectangle_40" data-name="Rectangle 40" width="414" height="323" fill="url(#linear-gradient)"/>
+  <rect id="Rectangle_41" data-name="Rectangle 41" width="414" height="227" transform="translate(414 227) rotate(180)" fill="#e50000"/>
+  <circle id="Ellipse_23" data-name="Ellipse 23" cx="41" cy="41" r="41" transform="translate(296 47)" fill="#ce0000"/>
+  <path id="Intersection_6" data-name="Intersection 6" d="M0,70.22V0A40.981,40.981,0,0,1,20,35.22a40.975,40.975,0,0,1-19.634,35Z" transform="translate(0 178.951)" fill="#ce0000"/>
+  <path id="Intersection_4" data-name="Intersection 4" d="M0,1.684V0H78.508A41.017,41.017,0,0,1,39,30,41.017,41.017,0,0,1,0,1.684Z" transform="translate(241 0)" fill="#ce0000"/>
+  <circle id="Ellipse_30" data-name="Ellipse 30" cx="16" cy="16" r="16" transform="translate(261 136)" fill="#ce0000"/>
+  <circle id="Ellipse_31" data-name="Ellipse 31" cx="12" cy="12" r="12" transform="translate(236 59)" fill="#ce0000"/>
+  <path id="Intersection_3" data-name="Intersection 3" d="M0,43a62.024,62.024,0,0,1,118.034-.108V43Z" transform="translate(57.966 152.363)" fill="#ce0000"/>
+  <circle id="Ellipse_25" data-name="Ellipse 25" cx="8" cy="8" r="8" transform="translate(191 144)" fill="#ce0000"/>
+  <text id="Welcome_To" data-name="Welcome To" transform="translate(48 64)" fill="#f1f1f1" stroke="rgba(0,0,0,0)" stroke-width="1" font-size="13" font-family="Poppins-Medium, Poppins" font-weight="500"><tspan x="0" y="0">Welcome To</tspan></text>
+  <g id="Artwork_57" data-name="Artwork 57" transform="translate(48 86.622)">
+    <g id="Group_206" data-name="Group 206" clip-path="url(#clip-path)">
+      <text id="makane" transform="translate(0 39.953)" fill="#fff" font-size="47" font-family="Arciform, Arciform Sans"><tspan x="0" y="0">ma</tspan><tspan y="0" letter-spacing="-0.03em">k</tspan><tspan y="0" letter-spacing="0.01em">a</tspan><tspan y="0" letter-spacing="0.03em">n</tspan><tspan y="0">e</tspan></text>
+      <path id="Path_2676" data-name="Path 2676" d="M108.5,68.2a3,3,0,1,1-3-3,3,3,0,0,1,3,3" transform="translate(-57.909 -36.836)" fill="#fff"/>
+      <path id="Path_2677" data-name="Path 2677" d="M214.9,70.2a3,3,0,1,1-3-3,3,3,0,0,1,3,3" transform="translate(-118.022 -37.966)" fill="#fff"/>
+      <path id="Path_2678" data-name="Path 2678" d="M125.454,112.921h-1.436a57.511,57.511,0,0,1-32.41-11.18A1.523,1.523,0,1,1,93.436,99.3a53.674,53.674,0,0,0,63.6.3,1.523,1.523,0,1,1,1.827,2.436A57.424,57.424,0,0,1,125.5,112.921" transform="translate(-51.412 -55.932)" fill="#fff"/>
+    </g>
+  </g>
+  <path id="Intersection_2" data-name="Intersection 2" d="M0,0H.04A41.015,41.015,0,0,1,32,40,41.012,41.012,0,0,1,0,80Z" transform="translate(0 25)" fill="#ce0000"/>
+</svg>
