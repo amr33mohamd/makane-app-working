@@ -18,7 +18,7 @@ export default function PhoneScreen({route,navigation}) {
 
 
             if (phone != '') {
-                axios.post('http://127.0.0.1:8000/api/add-phone',null, {
+                axios.post('http://192.168.1.2:8000/api/add-phone',null, {
                     params: {
                         phone,
                         code

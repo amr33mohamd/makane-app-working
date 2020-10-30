@@ -19,7 +19,7 @@ export default function PaScreen({navigation}) {
     const [update,setUpdate] = useState(false);
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/user',null, {
+            axios.post('http://192.168.1.2:8000/api/user',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`

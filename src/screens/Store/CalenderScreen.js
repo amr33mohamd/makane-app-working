@@ -20,7 +20,7 @@ export default function CalenderScreen({navigation}) {
     const [currentData,setCurrentData] = useState(comming);
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/reservations',null, {
+            axios.post('http://192.168.1.2:8000/api/reservations',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -44,7 +44,7 @@ export default function CalenderScreen({navigation}) {
     },[update,isFocused]);
     var arrived = (id)=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/arrived',null, {
+            axios.post('http://192.168.1.2:8000/api/arrived',null, {
                 params:{
                     id
                 },
@@ -79,7 +79,7 @@ export default function CalenderScreen({navigation}) {
     }
     var notArrived = (id)=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/not-arrived',null, {
+            axios.post('http://192.168.1.2:8000/api/not-arrived',null, {
                 params:{
                     id
                 },

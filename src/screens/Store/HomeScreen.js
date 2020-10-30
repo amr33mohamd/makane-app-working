@@ -37,7 +37,7 @@ export default  function HomeScreen({navigation}) {
     };
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/user',null, {
+            axios.post('http://192.168.1.2:8000/api/user',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -65,7 +65,7 @@ export default  function HomeScreen({navigation}) {
 
    var deleteImage= (id)=>{
        AsyncStorage.getItem('token').then((token)=>{
-           axios.post('http://127.0.0.1:8000/api/delete-image',null, {
+           axios.post('http://192.168.1.2:8000/api/delete-image',null, {
                 params:{
                     id
                 },
@@ -112,7 +112,7 @@ export default  function HomeScreen({navigation}) {
 
 
                 axios({
-                    url:'http://127.0.0.1:8000/api/upload-image',
+                    url:'http://192.168.1.2:8000/api/upload-image',
                     method:'POST',
                     headers:{
                         'Content-Type':'multipart/form-data'
@@ -158,7 +158,7 @@ export default  function HomeScreen({navigation}) {
 // alert(JSON.stringify(data))
 
                     axios({
-                        url:'http://127.0.0.1:8000/api/add-image',
+                        url:'http://192.168.1.2:8000/api/add-image',
                         method:'POST',
                         headers:{
                             'Authorization': `Bearer ${token}`,
@@ -194,7 +194,7 @@ export default  function HomeScreen({navigation}) {
         AsyncStorage.getItem('token').then((token)=> {
 
             if ( name != '') {
-                axios.post('http://127.0.0.1:8000/api/update_user', null, {
+                axios.post('http://192.168.1.2:8000/api/update_user', null, {
                     params: {
                         email, password, name,description_ar,description_en,
                         available:(available2 != null) ? available2 : persons,image:formMainImage,smoking,outt
@@ -305,7 +305,7 @@ export default  function HomeScreen({navigation}) {
                             )
                             :
                             <Image
-                                source={{ uri: 'http://127.0.0.1:8000/images/'+user.image }}
+                                source={{ uri: 'http://192.168.1.2:8000/images/'+user.image }}
                                 style={{ width: 100, height: 100,margin:10,resizeMode:'contain' }}
                             />
                         }
@@ -349,7 +349,7 @@ export default  function HomeScreen({navigation}) {
 
                                             (<View>
                                                 <Image
-                                                    source={{uri: 'http://127.0.0.1:8000/images/' + image.image}}
+                                                    source={{uri: 'http://192.168.1.2:8000/images/' + image.image}}
                                                     style={{flex: .3, height: 100, margin: 10}}
                                                 />
 

@@ -27,7 +27,7 @@ export default function CouponScreen({navigation}) {
 
             if (token) {
 
-                axios.post('http://127.0.0.1:8000/api/coupons', null, {
+                axios.post('http://192.168.1.2:8000/api/coupons', null, {
 
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -59,7 +59,7 @@ export default function CouponScreen({navigation}) {
 
     var buy_coupon = (id) => {
         AsyncStorage.getItem('token').then((token) => {
-            axios.post('http://127.0.0.1:8000/api/buy_coupon', null, {
+            axios.post('http://192.168.1.2:8000/api/buy_coupon', null, {
                 params: {
                     id
                 },

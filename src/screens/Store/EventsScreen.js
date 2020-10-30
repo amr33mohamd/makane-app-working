@@ -37,7 +37,7 @@ export default function EventsScreen({navigation}) {
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
 
-            axios.post('http://127.0.0.1:8000/api/user',null, {
+            axios.post('http://192.168.1.2:8000/api/user',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -71,7 +71,7 @@ export default function EventsScreen({navigation}) {
 
     var add_event = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/add-event',null, {
+            axios.post('http://192.168.1.2:8000/api/add-event',null, {
                 params:{
                     name,
                     available
@@ -105,7 +105,7 @@ export default function EventsScreen({navigation}) {
 
     var delete_event = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/delete-event',null, {
+            axios.post('http://192.168.1.2:8000/api/delete-event',null, {
                 params:{
                     id:deleteId
 

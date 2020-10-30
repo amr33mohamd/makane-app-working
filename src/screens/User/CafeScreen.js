@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {View,Image,StyleSheet,Alert,ScrollView,FlatList,TouchableOpacity,I18nManager,Linking} from 'react-native';
+import {View,Image,StyleSheet,Alert,ScrollView,FlatList,TouchableOpacity,I18nManager,Linking,Platform} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {Container, Header, Content, Item, Input, Icon, Button, Text,Picker, Tab, Tabs, Thumbnail, Toast,Spinner} from 'native-base';
 import StoreBox from '../../components/StoreBox'
@@ -23,22 +23,27 @@ import StatusBarPlaceHolder from "../../components/StatusBarPlaceHolder"
 import moment from "moment/moment";
 export default function CafeScreen({route,navigation}) {
     const {t} = useTranslation();
-    const [store,setStore]= useState(JSON.parse(route.params.item));
     const [normalModal,setNormalModal] = useState(false);
     const [specialModal,setSpecialModal] = useState(false);
     const [currentSpecialEvent,setCurrentSpecialEvent]= useState();
     const [selected,setSelected] = useState('view');
     const [featched,setFeatched] = useState(false);
     const [time, setTime] = useState(new Date());
+    const [time2, setTime2] = useState(new Date());
+    const [time3, setTime3] = useState(new Date());
+    const [fetch,setFetch] = useState(false);
     const [show, setShow] = useState(false);
+    const [show2, setShow2] = useState(false);
+    const [store,setStore]= useState([]);
+
     const [persons, setPersons] = useState('1');
     const [kids, setKids] = useState('0');
     const [smoking, setSmoking] = useState('0');
     const [outt, setOutt] = useState('0');
 
     var renderStars = ()=>{
-        var gold = parseInt(JSON.parse(route.params.item).rating);
-        var empty = 5 - parseInt(JSON.parse(route.params.item).rating);
+        var gold = parseInt(store.rating);
+        var empty = 5 - parseInt(store.rating);
         stars = [];
         while(gold > 0){
             gold = gold - 1;
@@ -50,8 +55,29 @@ export default function CafeScreen({route,navigation}) {
         return stars;
     }
     useEffect(()=>{
-        setStore(JSON.parse(route.params.item));
+        if(route.params.id == 0){
+            setStore(JSON.parse(route.params.item));
 
+            setFetch(true);
+        }
+        else {
+            axios.get('http://192.168.1.2:8000/api/store', {
+                params: {
+                    id:route.params.id
+                }
+            })
+                .then(function (response) {
+                    setStore(response.data.store[0]);
+                    setFetch(true);
+// alert('ss')
+                })
+                .catch(function (error) {
+// alert('jj')
+
+                    alert(error);
+                });
+
+        }
 
 
         // i18n.changeLanguage ('ar');
@@ -59,6 +85,9 @@ export default function CafeScreen({route,navigation}) {
 
     const showTimepicker = () => {
         setShow(true);
+    };
+    const showTimepicker2 = () => {
+        setShow2(true);
     };
     var reserveNormalButton = ()=>{
         setNormalModal(true);
@@ -77,13 +106,13 @@ export default function CafeScreen({route,navigation}) {
     var reserveNormal = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
             if(token) {
-                axios.post('http://127.0.0.1:8000/api/reserve', null, {
+                axios.post('http://192.168.1.2:8000/api/reserve', null, {
                     params: {
                         store_id: store.id,
                         type: 1,
                         smoking,
                         outt,
-                        time,
+                        time:time3,
                         persons,
                         kids
 
@@ -145,16 +174,30 @@ export default function CafeScreen({route,navigation}) {
             }
         })
     }
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate ;
+    const onChange = async (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+
         setShow(false);
+
         setTime(currentDate);
+        setTime3(currentDate);
+
+
+    };
+    const onChange2 = (event, selectedDate2) => {
+        setShow2(false);
+      const date2 =  moment(time).format('YYYY-MM-DD')
+      const  time2 = moment(selectedDate2).format("hh:mm")
+        // alert(date);
+        // alert(moment(date2 + ' ' + time2).format('DD MM YYYY hh:mm:ss'));
+      setTime3(moment(date2 + ' ' + time2).format());
+        // setTime(currentDate);
     };
 
     var reserveSpecial = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
             if(token) {
-                axios.post('http://127.0.0.1:8000/api/reserve', null, {
+                axios.post('http://192.168.1.2:8000/api/reserve', null, {
                     params: {
                         store_id: store.id,
                         type: 2,
@@ -218,267 +261,418 @@ export default function CafeScreen({route,navigation}) {
 
     }
 
-return (
-    <ScrollView
-        decelerationRate="fast"
-        renderToHardwareTextureAndroid
-        >
-        <StatusBarPlaceHolder/>
+    if(fetch == true) {
+        return (
+            <ScrollView
+                decelerationRate="fast"
+                renderToHardwareTextureAndroid
+            >
+                <StatusBarPlaceHolder/>
 
-            <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={normalModal} style={{marginTop:70}}>
-                <ScrollView>
-                <View style={{backgroundColor:'#fff',padding:10,borderRadius:20}}>
-                    <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:20,paddingHorizontal:20,paddingTop:20}}>{t('Are you sure you want to book now!')}</Text>
-                    <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:15,padding:20}}>{t('You can cancel your reservation 30 minutes after reserve.')}</Text>
-                    <Text style={{        fontFamily:'Poppins-Medium',
-                        fontSize:12,
-                        padding:10,
-                        textAlign:'center'
-
-                    }}> {moment(time).format('LLLL')}</Text>
-                    <Button title="Choose Photo" style={{
-                        backgroundColor: '#E50000',
-                        alignItems:'center',
-                        justifyContent:'center',
-                        borderRadius:50,
-                        shadowOpacity: 0.3,
-                        shadowRadius: 5,
-                        shadowColor: '#E50000',
-                        shadowOffset: { height: 0, width: 0 },
-                        margin:10,
-                        alignSelf:'center'
-
-                    }} onPress={showTimepicker} >
-                        <Text style={{
-                            fontFamily:'Poppins-Medium',
-                            fontSize:12,
-                            padding:10,
-                            textAlign:'center',
-                            color:'#fff',
-                            alignSelf:'center'
-
-                        }}>{t('Select Date and Time')}</Text>
-                    </Button>
-
-                    {show && (
-                        <DateTimePicker
-                            testID="dateTimePicker"
-                            value={time}
-                            mode={'datetime'}
-                            is24Hour={false}
-                            display="default"
-                            onChange={onChange}
-                        />
-                    )}
-
-                    <Text style={{        fontFamily:'Poppins-Medium',
-                        fontSize:12,
-                        padding:10,
-                        textAlign:'center'
-
-                    }}>{t('Number of persons')}</Text>
-                    <Item style={styles.searchInput} rounded >
-
-                        <Input placeholder='Number' value={persons} onChangeText={(value)=>setPersons(value)} style={{textAlign:'center'}}  fontFamily='Poppins-ExtraLight' fontSize={15}  placeholderTextColor="#CECDCD"
-                        />
-                    </Item>
-
-                    <Text style={{        fontFamily:'Poppins-Medium',
-                        fontSize:12,
-                        padding:10,
-                        textAlign:'center'
-
-                    }}>{t('Number of kids')}</Text>
-                    <Item style={styles.searchInput} rounded >
-
-                        <Input placeholder='Number' value={kids} onChangeText={(value)=>setKids(value)} style={{textAlign:'center'}}  fontFamily='Poppins-ExtraLight' fontSize={15}  placeholderTextColor="#CECDCD"
-                        />
-                    </Item>
-                    {
-                        (store.smoking == 1) &&
-                        <View>
+                <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={normalModal} style={{marginTop: 70}}>
+                    <ScrollView>
+                        <View style={{backgroundColor: '#fff', padding: 10, borderRadius: 20}}>
+                            <Text style={{
+                                fontFamily: 'Poppins-Medium',
+                                color: '#000',
+                                fontSize: 20,
+                                paddingHorizontal: 20,
+                                paddingTop: 20
+                            }}>{t('Are you sure you want to book now!')}</Text>
+                            <Text style={{
+                                fontFamily: 'Poppins-Medium',
+                                color: '#CECDCD',
+                                fontSize: 15,
+                                padding: 20
+                            }}>{t('You can cancel your reservation 30 minutes after reserve.')}</Text>
                             <Text style={{
                                 fontFamily: 'Poppins-Medium',
                                 fontSize: 12,
                                 padding: 10,
                                 textAlign: 'center'
 
-                            }}>{t('Smoking')}</Text>
+                            }}> {moment(time3).format('LLLL')}</Text>
+                            <Button title="Choose Photo" style={{
+                                backgroundColor: '#E50000',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: 50,
+                                shadowOpacity: 0.3,
+                                shadowRadius: 5,
+                                shadowColor: '#E50000',
+                                shadowOffset: {height: 0, width: 0},
+                                margin: 10,
+                                alignSelf: 'center'
+
+                            }} onPress={showTimepicker}>
+                                <Text style={{
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 12,
+                                    padding: 10,
+                                    textAlign: 'center',
+                                    color: '#fff',
+                                    alignSelf: 'center'
+
+                                }}>{t('Select Date')}</Text>
+                            </Button>
+
+                            {show && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={time}
+                                    mode={'datetime'}
+                                    is24Hour={false}
+                                    display="default"
+                                    onChange={onChange}
+                                />
+                            )}
+                            {
+                                (Platform.OS == 'android')
+                                &&
+                                <Button title="Choose Photo" style={{
+                                    backgroundColor: '#E50000',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: 50,
+                                    shadowOpacity: 0.3,
+                                    shadowRadius: 5,
+                                    shadowColor: '#E50000',
+                                    shadowOffset: {height: 0, width: 0},
+                                    margin: 10,
+                                    alignSelf: 'center'
+
+                                }} onPress={showTimepicker2}>
+                                    <Text style={{
+                                        fontFamily: 'Poppins-Medium',
+                                        fontSize: 12,
+                                        padding: 10,
+                                        textAlign: 'center',
+                                        color: '#fff',
+                                        alignSelf: 'center'
+
+                                    }}>{t('Select Time')}</Text>
+                                </Button>
+
+
+                            }
+                            {show2 && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={time2}
+                                    mode={'time'}
+                                    is24Hour={false}
+                                    display="default"
+                                    onChange={onChange2}
+                                />
+                            )}
+
+                            <Text style={{
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 12,
+                                padding: 10,
+                                textAlign: 'center'
+
+                            }}>{t('Number of persons')}</Text>
                             <Item style={styles.searchInput} rounded>
 
-                                <Picker
-                                    note
-                                    mode="dropdown"
-                                    style={{width: 120}}
-                                    selectedValue={smoking}
-                                    onValueChange={(value) => {
-                                        setSmoking(value)
-                                    }}
-                                >
-                                    <Picker.Item label="Yes" value="1"/>
-                                    <Picker.Item label="No" value="0"/>
-                                </Picker>
-
+                                <Input placeholder='Number' value={persons} onChangeText={(value) => setPersons(value)}
+                                       style={{textAlign: 'center'}} fontFamily='Poppins-ExtraLight' fontSize={15}
+                                       placeholderTextColor="#CECDCD"
+                                />
                             </Item>
+
+                            <Text style={{
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 12,
+                                padding: 10,
+                                textAlign: 'center'
+
+                            }}>{t('Number of kids')}</Text>
+                            <Item style={styles.searchInput} rounded>
+
+                                <Input placeholder='Number' value={kids} onChangeText={(value) => setKids(value)}
+                                       style={{textAlign: 'center'}} fontFamily='Poppins-ExtraLight' fontSize={15}
+                                       placeholderTextColor="#CECDCD"
+                                />
+                            </Item>
+                            {
+                                (store.smoking == 1) &&
+                                <View>
+                                    <Text style={{
+                                        fontFamily: 'Poppins-Medium',
+                                        fontSize: 12,
+                                        padding: 10,
+                                        textAlign: 'center'
+
+                                    }}>{t('Smoking')}</Text>
+                                    <Item style={styles.searchInput} rounded>
+
+                                        <Picker
+                                            note
+                                            mode="dropdown"
+                                            style={{width: 120}}
+                                            selectedValue={smoking}
+                                            onValueChange={(value) => {
+                                                setSmoking(value)
+                                            }}
+                                        >
+                                            <Picker.Item label="Yes" value="1"/>
+                                            <Picker.Item label="No" value="0"/>
+                                        </Picker>
+
+                                    </Item>
+                                </View>
+                            }
+
+
+                            {
+                                (store.outt == 1) &&
+                                <View>
+                                    <Text style={{
+                                        fontFamily: 'Poppins-Medium',
+                                        fontSize: 12,
+                                        padding: 10,
+                                        textAlign: 'center'
+
+                                    }}>{t('Outside Place')}</Text>
+
+                                    <Item style={styles.searchInput} rounded>
+
+                                        <Picker
+                                            note
+                                            mode="dropdown"
+                                            style={{width: 120}}
+                                            selectedValue={outt}
+                                            onValueChange={(value) => {
+                                                setOutt(value)
+                                            }
+                                            }
+                                        >
+                                            <Picker.Item label="Yes" value="1"/>
+                                            <Picker.Item label="No" value="0"/>
+                                        </Picker>
+                                    </Item>
+                                </View>
+                            }
+
+
+                            <View style={{flexDirection: 'row', justifyContent: 'center', padding: 40}}>
+                                <Button
+                                    title="Press me"
+                                    onPress={() => {
+                                        reserveNormal()
+                                    }}
+                                    style={styles.modalBook}
+                                >
+                                    <Text style={{
+                                        color: '#fff',
+                                        fontFamily: 'Poppins-Medium',
+                                        textAlign: 'center',
+                                        fontSize: 12,
+                                        textAlign: 'center'
+                                    }}>{t('Book Now')} </Text>
+
+                                </Button>
+                                <Button
+                                    title="Press me"
+                                    onPress={() => {
+                                        closeModal()
+                                    }}
+                                    style={styles.modalCancel}
+                                >
+                                    <Text style={{
+                                        color: '#000',
+                                        fontFamily: 'Poppins-Medium',
+                                        textAlign: 'center',
+                                        fontSize: 12,
+                                        textAlign: 'center'
+                                    }}>{t('Cancel')} </Text>
+
+                                </Button>
+
+                            </View>
                         </View>
-                    }
+                    </ScrollView>
+                </Modal>
+                <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={specialModal} style={{marginTop: 70}}>
+                    <View style={{height: 290, backgroundColor: '#fff', padding: 10, borderRadius: 20}}>
+                        <Text style={{
+                            fontFamily: 'Poppins-Medium',
+                            color: '#000',
+                            fontSize: 20,
+                            paddingHorizontal: 20,
+                            paddingTop: 20
+                        }}>{t('Are you sure you want to book now!')}</Text>
+                        <Text style={{
+                            fontFamily: 'Poppins-Medium',
+                            color: '#CECDCD',
+                            fontSize: 15,
+                            padding: 20
+                        }}>{t('You can cancel your reservation 30 minutes after reserve.')}</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+                            <Button
+                                title="Press me"
+                                onPress={() => {
+                                    reserveSpecial()
+                                }}
+                                style={styles.modalBook}
+                            >
+                                <Text style={{
+                                    color: '#fff',
+                                    fontFamily: 'Poppins-Medium',
+                                    textAlign: 'center',
+                                    fontSize: 12,
+                                    textAlign: 'center'
+                                }}>{t('Book Now')} </Text>
 
+                            </Button>
+                            <Button
+                                title="Press me"
+                                onPress={() => {
+                                    closeModal()
+                                }}
+                                style={styles.modalCancel}
+                            >
+                                <Text style={{
+                                    color: '#000',
+                                    fontFamily: 'Poppins-Medium',
+                                    textAlign: 'center',
+                                    fontSize: 12,
+                                    textAlign: 'center'
+                                }}>{t('Cancel')} </Text>
 
+                            </Button>
+
+                        </View>
+                    </View>
+                </Modal>
+                <ScrollView
+                    renderToHardwareTextureAndroid
+                    horizontal={true}
+                    contentContainerStyle={{width: '300%'}}
+                    showsHorizontalScrollIndicator={false}
+                    scrollEventThrottle={200}
+                    style={{position: 'absolute'}}
+                    decelerationRate="fast"
+                    pagingEnabled
+
+                >
 
                     {
-                        (store.outt == 1) &&
-                            <View>
-                        <Text style={{        fontFamily:'Poppins-Medium',
-                                fontSize:12,
-                                padding:10,
-                                textAlign:'center'
-
-                            }}>{t('Outside Place')}</Text>
-
-                        <Item style={styles.searchInput} rounded >
-
-                        <Picker
-                        note
-                        mode="dropdown"
-                        style={{ width: 120 }}
-                        selectedValue={outt}
-                        onValueChange={(value)=>{
-                        setOutt(value)
-                    }
-                    }
-                        >
-                        <Picker.Item label="Yes" value="1" />
-                        <Picker.Item label="No" value="0" />
-                        </Picker>
-                        </Item>
-                            </View>
+                        store.store_images.map((image) =>
+                            <Image renderToHardwareTextureAndroid source={{
+                                uri: 'http://192.168.1.2:8000/images/' + image.image
+                            }}
+                                   style={{
+                                       width: '33.33333%',
+                                       height: 250,
+                                       resizeMode: 'stretch'
+                                   }}/>
+                        )
                     }
 
-
-
-                    <View style={{flexDirection:'row',justifyContent:'center',padding:40}}>
-                        <Button
-                            title="Press me"
-                            onPress={() => {reserveNormal()}}
-                            style={ styles.modalBook }
-                        >
-                            <Text style={{color:'#fff' ,fontFamily:'Poppins-Medium',textAlign:'center',fontSize:12,textAlign:'center'}}>{t('Book Now')} </Text>
-
-                        </Button>
-                        <Button
-                            title="Press me"
-                            onPress={() => {closeModal()}}
-                            style={ styles.modalCancel }
-                        >
-                            <Text style={{color:'#000' ,fontFamily:'Poppins-Medium',textAlign:'center',fontSize:12,textAlign:'center'}}>{t('Cancel')} </Text>
-
-                        </Button>
-
-                    </View>
-                </View>
-                </ScrollView>
-            </Modal>
-            <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={specialModal} style={{marginTop:70}}>
-                <View style={{height:290,backgroundColor:'#fff',padding:10,borderRadius:20}}>
-                    <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:20,paddingHorizontal:20,paddingTop:20}}>{t('Are you sure you want to book now!')}</Text>
-                    <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:15,padding:20}}>{t('You can cancel your reservation 30 minutes after reserve.')}</Text>
-                    <View style={{flexDirection:'row',justifyContent:'flex-end'}}>
-                        <Button
-                            title="Press me"
-                            onPress={() => {reserveSpecial()}}
-                            style={ styles.modalBook }
-                        >
-                            <Text style={{color:'#fff' ,fontFamily:'Poppins-Medium',textAlign:'center',fontSize:12,textAlign:'center'}}>{t('Book Now')} </Text>
-
-                        </Button>
-                        <Button
-                            title="Press me"
-                            onPress={() => {closeModal()}}
-                            style={ styles.modalCancel }
-                        >
-                            <Text style={{color:'#000' ,fontFamily:'Poppins-Medium',textAlign:'center',fontSize:12,textAlign:'center'}}>{t('Cancel')} </Text>
-
-                        </Button>
-
-                    </View>
-                </View>
-            </Modal>
-    <ScrollView
-        renderToHardwareTextureAndroid
-        horizontal={true}
-        contentContainerStyle={{ width: '300%' }}
-        showsHorizontalScrollIndicator={false}
-        scrollEventThrottle={200}
-        style={{position: 'absolute'}}
-        decelerationRate="fast"
-        pagingEnabled
-
-    >
-
-        {
-            store.store_images.map((image)=>
-                <Image renderToHardwareTextureAndroid  source={{
-                    uri: 'http://127.0.0.1:8000/images/'+image.image}}
+                    <Button
+                        onPress={() => navigation.goBack()}
                         style={{
-                            width:'33.33333%',
-                            height:250,
-                            resizeMode:'stretch'
-                        }}/>
-            )
-        }
+                            position: 'absolute',
+                            width: 50,
+                            height: 50,
+                            backgroundColor: '#fff',
+                            top: 30,
+                            left: 10,
+                            justifyContent: 'center',
+                            borderRadius: 130
+                        }}
+                    >
+                        <Ionicons name="ios-arrow-back" size={24} color="black"/>
 
-        <Button
-            onPress={ ()=> navigation.goBack() }
-            style= {{position:'absolute',width:50,height:50,backgroundColor:'#fff',top:30,left:10,justifyContent:'center',borderRadius:130}}
-        >
-            <Ionicons name="ios-arrow-back" size={24} color="black" />
+                    </Button>
 
-        </Button>
+                </ScrollView>
 
-    </ScrollView>
+                <View renderToHardwareTextureAndroid style={styles.container}>
+                    <Text style={{
+                        fontFamily: 'Poppins-Medium',
+                        color: '#CECDCD',
+                        fontSize: 12,
+                        padding: 5,
+                        alignSelf: 'flex-start'
+                    }}>{store.country}</Text>
 
-            <View  renderToHardwareTextureAndroid style={styles.container}>
-                <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:12,padding:5,alignSelf:'flex-start'}}>{store.country}</Text>
+                    <Text style={{
+                        fontFamily: 'Poppins-Medium',
+                        color: '#000',
+                        fontSize: 28,
+                        padding: 5,
+                        alignSelf: 'flex-start'
+                    }}>{store.name}</Text>
+                    <Text style={{
+                        fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                        color: '#CECDCD',
+                        fontSize: 12,
+                        padding: 5,
+                        alignSelf: 'flex-start'
+                    }}>{store.available} {t('person available')}</Text>
+                    <View
+                        style={{flexDirection: 'row', alignItems: 'flex-start', alignSelf: 'flex-start', padding: 10}}>
+                        <Text
+                            onPress={() => {
+                                setSelected('view')
+                            }
+                            }
+                            style={{
+                                fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                                color: (selected != 'view') ? '#CECDCD' : '#000',
+                                fontSize: 12,
+                                paddingHorizontal: 20,
+                                paddingTop: 10,
+                                paddingBottom: 15,
+                                borderBottomColor: '#E50000',
+                                borderBottomWidth: (selected == 'view') ? 1 : 0
+                            }}>
+                            {t('Overview')}
+                        </Text>
+                        <Text
+                            onPress={() => {
+                                setSelected('reviews')
+                            }
+                            }
+                            style={{
+                                fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                                color: (selected != 'reviews') ? '#CECDCD' : '#000',
+                                fontSize: 12,
+                                paddingHorizontal: 20,
+                                paddingTop: 10,
+                                borderBottomColor: '#E50000',
+                                paddingBottom: 15,
+                                borderBottomWidth: (selected == 'reviews') ? 1 : 0
+                            }}>
+                            {t('Reviews')}
+                        </Text>
+                    </View>
 
-                <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:28,padding:5,alignSelf:'flex-start'}}>{store.name}</Text>
-                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:12,padding:5,alignSelf:'flex-start'}}>{store.available} {t('person available')}</Text>
-                <View style={{flexDirection:'row',alignItems:'flex-start',alignSelf:'flex-start',padding:10}}>
-                   <Text
-                       onPress={()=>
-                       {
-                           setSelected('view')
-                       }
-                       }
-                       style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:(selected != 'view') ? '#CECDCD' : '#000',fontSize:12,paddingHorizontal:20,paddingTop:10,paddingBottom:15, borderBottomColor :'#E50000',borderBottomWidth: (selected == 'view') ? 1 : 0}}>
-                       {t('Overview')}
-                   </Text>
-                    <Text
-                        onPress={()=>
-                        {
-                            setSelected('reviews')
-                        }
-                        }
-                        style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:(selected != 'reviews') ? '#CECDCD' : '#000',fontSize:12,paddingHorizontal:20,paddingTop:10,borderBottomColor :'#E50000',paddingBottom:15,borderBottomWidth: (selected == 'reviews') ? 1 : 0}}>
-                        {t('Reviews')}
-                    </Text>
-                </View>
+                    {
+                        (selected == 'view') ?
+                            <View style={{alignItems: 'center'}}>
+                                <Text
+                                    style={{fontFamily: 'Poppins-Medium', color: '#CECDCD', fontSize: 15, padding: 20}}>
 
-                        {
-                            (selected == 'view' ) ?
-                            <View style={{alignItems:'center'}}>
-                                    <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:15,padding:20}}>
-
-                                        {(i18n.language == 'ar') ? store.description_ar : store.description_en}
+                                    {(i18n.language == 'ar') ? store.description_ar : store.description_en}
 
                                 </Text>
                                 <Button
-                                    onPress={ ()=> Linking.openURL('https://www.google.com/maps?q='+store.lat+','+store.lng) }
-                            style= {styles.selectedButton}
-                            >
-                            <Text style={{color:'#fff' ,fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',textAlign:'center',fontSize:15}}>{t('Website')}</Text>
+                                    onPress={() => Linking.openURL('https://www.google.com/maps?q=' + store.lat + ',' + store.lng)}
+                                    style={styles.selectedButton}
+                                >
+                                    <Text style={{
+                                        color: '#fff',
+                                        fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                                        textAlign: 'center',
+                                        fontSize: 15
+                                    }}>{t('Website')}</Text>
 
 
-                            </Button>
+                                </Button>
                                 <View style={styles.stars}>
 
                                     {renderStars()}
@@ -489,7 +683,8 @@ return (
                                         null
                                         :
                                         (<Text style={{
-                                                fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                                                color: '#000',
+                                                fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                                                color: '#000',
                                                 fontSize: 20,
                                                 padding: 5
                                             }}>{t('Special Events')}</Text>
@@ -497,35 +692,42 @@ return (
                                 }
 
 
-                                <View style={{justifyContent:'center',alignItems:'center'}}>
+                                <View style={{justifyContent: 'center', alignItems: 'center'}}>
 
                                     <FlatList
                                         style={styles.components}
                                         contentContainerStyle={{}}
                                         data={store.special_events}
 
-                                        ListFooterComponent={()=>
+                                        ListFooterComponent={() =>
 
                                             <Button
                                                 title="Press me"
-                                                onPress={() => {reserveNormalButton()}}
-                                                style={ styles.selectedButton2 }
+                                                onPress={() => {
+                                                    reserveNormalButton()
+                                                }}
+                                                style={styles.selectedButton2}
                                             >
-                                                <Text style={{color:'#fff' ,fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',fontSize:12,textAlign:'center',alignSelf:'center'}}>{t('Book Now')} </Text>
+                                                <Text style={{
+                                                    color: '#fff',
+                                                    fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                                                    fontSize: 12,
+                                                    textAlign: 'center',
+                                                    alignSelf: 'center'
+                                                }}>{t('Book Now')} </Text>
 
 
                                             </Button>
                                         }
-                                        renderItem={({ item }) => (
-
+                                        renderItem={({item}) => (
 
 
                                             <SpecialEventBox
-                                                image={'http://127.0.0.1:8000/images/'+store.image}
+                                                image={'http://192.168.1.2:8000/images/' + store.image}
                                                 name={item.name}
                                                 time={item.time}
                                                 available={item.available}
-                                                onPress={()=> {
+                                                onPress={() => {
                                                     reserveSpecialButton(item.id)
                                                 }
                                                 }
@@ -537,38 +739,40 @@ return (
                                 </View>
 
 
-
                             </View>
                             :
                             (
-                            <FlatList
-                            style={styles.components}
-                            data={store.store_reviews}
-                            renderItem={({ item }) => (
+                                <FlatList
+                                    style={styles.components}
+                                    data={store.store_reviews}
+                                    renderItem={({item}) => (
 
 
+                                        <ReviewBox
+                                            image={'https://docs.nativebase.io/docs/assets/web-cover1.jpg'}
+                                            username={item.reviewer.name}
+                                            rate={item.rate}
+                                            review={item.review}
+                                        />
+                                    )}
+                                    keyExtractor={item => item.id}
+                                />)
 
-                            <ReviewBox
-                                image={'https://docs.nativebase.io/docs/assets/web-cover1.jpg'}
-                                username={item.reviewer.name}
-                                rate={item.rate}
-                                review={item.review}
-                            />
-                        )}
-                            keyExtractor={item => item.id}
-                            />)
-
-                        }
-
+                    }
 
 
-
-            </View>
-
+                </View>
 
 
-    </ScrollView>
-)
+            </ScrollView>
+        )
+    }
+    else {
+        return  (
+            <View style={{justifyContent:'center',alignItems:'center',alignSelf:'center',top:'50%'}}>
+                <Spinner color='#E50000' style={{alignSelf:'center',justifyContent:'center'}}/>
+            </View>)
+    }
 
 }
 const styles = StyleSheet.create({

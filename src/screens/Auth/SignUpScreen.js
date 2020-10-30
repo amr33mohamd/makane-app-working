@@ -25,7 +25,7 @@ export default function SignUpScreen({route,navigation}) {
 
    var submit = () =>{
        if(email != '' && password != '' && password != '' && phone != '20'){
-           axios.get('http://127.0.0.1:8000/api/signup', {
+           axios.get('http://192.168.1.2:8000/api/signup', {
                params: {
                    email, password, phone, name, country: 'kkk',code
                }

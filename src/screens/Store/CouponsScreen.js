@@ -22,7 +22,7 @@ export default function CouponScreen({navigation}) {
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
 
-            axios.post('http://127.0.0.1:8000/api/store-coupons',null, {
+            axios.post('http://192.168.1.2:8000/api/store-coupons',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -44,7 +44,7 @@ export default function CouponScreen({navigation}) {
 
     var buy_coupon = (id)=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/buy_coupon',null, {
+            axios.post('http://192.168.1.2:8000/api/buy_coupon',null, {
                 params:{
                     id
                 },
@@ -80,7 +80,7 @@ export default function CouponScreen({navigation}) {
     var check_coupon = (code)=>{
 
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/use-coupon',null, {
+            axios.post('http://192.168.1.2:8000/api/use-coupon',null, {
                 params:{
                     id:code
                 },

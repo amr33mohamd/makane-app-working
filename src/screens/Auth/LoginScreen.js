@@ -28,7 +28,7 @@ export default function LoginScreen({route,navigation}) {
                 navigation.navigate('User');
             }
         })
-         axios.get('http://127.0.0.1:8000/api/settings',null, {
+         axios.get('http://192.168.1.2:8000/api/settings',null, {
 
          }).then((value)=>{
              setLogin(''+value.data.settings[2].value)
@@ -90,7 +90,7 @@ export default function LoginScreen({route,navigation}) {
 
     var submitSocial = (email) =>{
 
-            axios.post('http://127.0.0.1:8000/api/social-login',null, {
+            axios.post('http://192.168.1.2:8000/api/social-login',null, {
                 params: {
                     email,
                 }
@@ -129,7 +129,7 @@ export default function LoginScreen({route,navigation}) {
 
     var submit = () =>{
         if(email != '' && password != '' ){
-            axios.post('http://127.0.0.1:8000/api/login',null, {
+            axios.post('http://192.168.1.2:8000/api/login',null, {
                 params: {
                     email, password
                 }

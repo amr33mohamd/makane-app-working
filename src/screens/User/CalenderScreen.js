@@ -24,7 +24,7 @@ export default function CalenderScreen({navigation}) {
         })
         AsyncStorage.getItem('token').then((token)=>{
             if(token) {
-                axios.post('http://127.0.0.1:8000/api/reservations', null, {
+                axios.post('http://192.168.1.2:8000/api/reservations', null, {
 
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -51,7 +51,7 @@ export default function CalenderScreen({navigation}) {
     var cancel = (id)=>{
         setFeatched(false)
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/cancel_reservation',null, {
+            axios.post('http://192.168.1.2:8000/api/cancel_reservation',null, {
                 params:{
                     id
                 },
@@ -137,7 +137,7 @@ export default function CalenderScreen({navigation}) {
                                     }}
                                     id={item.id}
                                     store_id={item.store.id}
-                                    image={'http://127.0.0.1:8000/images/' + item.store.image}
+                                    image={'http://192.168.1.2:8000/images/' + item.store.image}
                                     status={item.status}
                                     lat={item.store.lat}
                                     lng={item.store.lng}

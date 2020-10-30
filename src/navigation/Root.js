@@ -14,14 +14,22 @@ import Store from "./StoreStack";
 import PayScreen from "../screens/Store/PayScreen";
 
 const Stack = createStackNavigator();
-
+const linking = {
+    prefixes: ['https://makane.com', 'makane://'],
+    config: {
+        screens: {
+            User: 'user/:id',
+            CafeScreen:'cafe/:id'
+        },
+    },
+};
 export default function RootNavigation() {
     const { t } = useTranslation();
     const [initial , setIninitial] = useState('Auth');
 
         return (
             <Root>
-                <NavigationContainer>
+                <NavigationContainer linking={linking}>
                     <Stack.Navigator  >
                         <Stack.Screen name="Loading" component={LoadingScreen} options={{headerShown:false,title:t('Home')}}/>
 

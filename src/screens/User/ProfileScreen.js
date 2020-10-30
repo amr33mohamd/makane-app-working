@@ -31,7 +31,7 @@ export default function ProfileScreen({navigation}) {
             })
             if (token) {
 
-                axios.post('http://127.0.0.1:8000/api/user', null, {
+                axios.post('http://192.168.1.2:8000/api/user', null, {
 
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -58,7 +58,7 @@ export default function ProfileScreen({navigation}) {
         AsyncStorage.getItem('token').then((token) => {
 
             if (name != '') {
-                axios.post('http://127.0.0.1:8000/api/update_user', null, {
+                axios.post('http://192.168.1.2:8000/api/update_user', null, {
                     params: {
                         email, password, name
                     },
@@ -116,6 +116,49 @@ export default function ProfileScreen({navigation}) {
                 </View>
 
                 <View style={styles.container}>
+                    <Button
+                        title="Press me"
+                        onPress={() => {
+                            if(i18n.language == 'ar'){
+                                AsyncStorage.setItem('lang','en');
+                                i18n.changeLanguage ('en');
+                                I18nManager.forceRTL(false);
+
+                                RNRestart.Restart();
+
+                            }
+                            else {
+                                AsyncStorage.setItem('lang','ar');
+                                i18n.changeLanguage ('ar');
+                                I18nManager.forceRTL(true);
+
+                                RNRestart.Restart();
+
+                            }
+
+                        }}
+                        style={{
+                            backgroundColor: '#E50000',
+                            alignItems:'center',
+                            justifyContent:'center',
+                            borderRadius:50,
+                            shadowOpacity: 0.3,
+                            shadowRadius: 5,
+                            shadowColor: '#E50000',
+                            shadowOffset: { height: 0, width: 0 },
+                            margin:10,
+                            alignSelf:'center'
+                        }}
+                    >
+                        <Text style={{
+                            color: '#fff',
+                            fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 13,
+                            textAlign: 'center',
+                            fontSize: 15,
+                            alignSelf:'center'
+                        }}>{ (i18n.language == 'ar') ? 'En' : 'Ar'}</Text>
+
+                    </Button>
                     <Text style={{
                         fontFamily: 'Poppins-Medium',
                         fontSize: 15,
@@ -123,6 +166,7 @@ export default function ProfileScreen({navigation}) {
                         textAlign: 'center'
 
                     }}>{t('Points')} : {points}</Text>
+
                     <Text style={{
                         fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 13,
                         padding: 10,
@@ -203,50 +247,7 @@ export default function ProfileScreen({navigation}) {
                             color: '#E50000'
                         }}>{errors.password}</Text>
                     }
-                    <Button
-                        title="Press me"
-                        onPress={() => {
-                            if(i18n.language == 'ar'){
-                                AsyncStorage.setItem('lang','en');
-                                i18n.changeLanguage ('en');
-                                I18nManager.forceRTL(false);
 
-                                RNRestart.Restart();
-
-                            }
-                            else {
-                                AsyncStorage.setItem('lang','ar');
-                                i18n.changeLanguage ('ar');
-                                I18nManager.forceRTL(true);
-
-                                RNRestart.Restart();
-
-                            }
-
-                        }}
-                        style={{
-                            backgroundColor: '#E50000',
-                            alignItems:'center',
-                            justifyContent:'center',
-                            width:'70%',
-                            borderRadius:50,
-                            shadowOpacity: 0.3,
-                            shadowRadius: 5,
-                            shadowColor: '#E50000',
-                            shadowOffset: { height: 0, width: 0 },
-                            margin:10,
-                            alignSelf:'center'
-                        }}
-                    >
-                        <Text style={{
-                            color: '#fff',
-                            fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 13,
-                            textAlign: 'center',
-                            fontSize: 15,
-                            alignSelf:'center'
-                        }}>{t('Change Langauage to ')}{ (i18n.language == 'ar') ? 'english' : 'Arabic'}</Text>
-
-                    </Button>
 
 
                 </View>

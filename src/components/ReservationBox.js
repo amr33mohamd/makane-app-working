@@ -19,7 +19,7 @@ import i18n from "i18next/index";
     const  [review,setReview] = useState();
      var rate = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://127.0.0.1:8000/api/user-review',null, {
+            axios.post('http://192.168.1.2:8000/api/user-review',null, {
                 params:{
                   store_id:props.store_id,
                   reservation_id:props.id,

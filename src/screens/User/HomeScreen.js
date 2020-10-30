@@ -12,7 +12,7 @@ import { ImageBackground,Tile,Overlay,Caption,Title } from '@shoutem/ui';
 import Feather from 'react-native-vector-icons/Feather';
 import i18n from "i18next/index";
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({route,navigation}) {
     const { t } = useTranslation();
     const [selected , setSelected] = useState('resturant');
     const [restaurants, setRestaurants ] = useState([]);
@@ -243,7 +243,7 @@ export default function HomeScreen({navigation}) {
                             }
                             renderItem={({ item }) => (
                                 <TouchableOpacity onPress={()=>{
-                                    navigation.navigate('CafeScreen',{item:JSON.stringify(item)})
+                                    navigation.navigate('CafeScreen',{item:JSON.stringify(item),id:0})
                                 }}
                                                   activeOpacity={.95}
                                 >
@@ -251,7 +251,7 @@ export default function HomeScreen({navigation}) {
                                     <StoreBox
                                         name={item.name}
                                         description={item.description_en}
-                                        image={'http://127.0.0.1:8000/images/'+item.image}
+                                        image={'http://192.168.1.2:8000/images/'+item.image}
                                         available={item.available}
                                         rate={item.rating}
                                     />
