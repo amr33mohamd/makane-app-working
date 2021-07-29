@@ -24,7 +24,7 @@ export default function CalenderScreen({navigation}) {
         })
         AsyncStorage.getItem('token').then((token)=>{
             if(token) {
-                axios.post('http://192.168.1.2:8000/api/reservations', null, {
+                axios.post('http://makaneapp.com/api/reservations', null, {
 
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -51,7 +51,7 @@ export default function CalenderScreen({navigation}) {
     var cancel = (id)=>{
         setFeatched(false)
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://192.168.1.2:8000/api/cancel_reservation',null, {
+            axios.post('http://makaneapp.com/api/cancel_reservation',null, {
                 params:{
                     id
                 },
@@ -128,7 +128,7 @@ export default function CalenderScreen({navigation}) {
 
 
                                 <ReservationBox
-                                    date={(item.type == 1) ? moment(item.created_at).format('h:mm a') : moment(item.special_event.time, 'hh:mm:ss').format('h:mm a')}
+                                    date={(item.type == 1 || item.type == 5) ? moment(item.created_at).format('h:mm a') : moment(item.special_event.time, 'hh:mm:ss').format('h:mm a')}
                                     address={item.store.address}
                                     type={item.type}
                                     clientReview={item.clientReview}
@@ -137,7 +137,7 @@ export default function CalenderScreen({navigation}) {
                                     }}
                                     id={item.id}
                                     store_id={item.store.id}
-                                    image={'http://192.168.1.2:8000/images/' + item.store.image}
+                                    image={'http://makaneapp.com/images/' + item.store.image}
                                     status={item.status}
                                     lat={item.store.lat}
                                     lng={item.store.lng}
@@ -269,4 +269,3 @@ const styles = StyleSheet.create({
         width:'90%',
     }
 });
-

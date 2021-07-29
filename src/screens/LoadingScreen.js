@@ -6,6 +6,7 @@ import StoreBox from '../components/StoreBox'
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import i18n from "i18next/index";
+import messaging from '@react-native-firebase/messaging';
 
 export default function LoadingScreen({route,navigation}) {
     const { t } = useTranslation();
@@ -13,7 +14,22 @@ export default function LoadingScreen({route,navigation}) {
     const [password,setPassword] = useState();
 
     const [error,setError] = useState();
+    async function requestUserPermission() {
+  const authorizationStatus = await messaging().requestPermission();
+
+  if (authorizationStatus) {
+    if(authorizationStatus == 1){
+      messaging().onMessage(async remoteMessage => {
+  Alert.alert(remoteMessage.notification.body);
+});
+    }
+    console.log('Permission status:', authorizationStatus);
+  }
+}
+
     useEffect(()=>{
+
+requestUserPermission();
         AsyncStorage.getItem('lang').then((lang)=>{
             i18n.changeLanguage (lang);
 
@@ -45,6 +61,11 @@ export default function LoadingScreen({route,navigation}) {
 
             }
         })
+        messaging().onMessage(async remoteMessage => {
+    Alert.alert(remoteMessage.notification.body);
+  });
+
+
     },[]);
 
     return (
@@ -73,4 +94,3 @@ const styles = StyleSheet.create({
 
     }
 });
-

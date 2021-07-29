@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {View,Image,StyleSheet,Alert,ScrollView,FlatList,TouchableOpacity,I18nManager,Linking,Platform} from 'react-native';
+import {View,StyleSheet,Alert,ScrollView,FlatList,TouchableOpacity,I18nManager,Linking,Platform,Dimensions} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {Container, Header, Content, Item, Input, Icon, Button, Text,Picker, Tab, Tabs, Thumbnail, Toast,Spinner} from 'native-base';
 import StoreBox from '../../components/StoreBox'
@@ -11,9 +11,11 @@ import i18n from "i18next";
 import Modal from 'react-native-modal';
 import QRCode from 'react-native-qrcode-svg';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Image,ImageGallery,ImageGalleryOverlay } from '@shoutem/ui';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Lightbox from 'react-native-lightbox';
 
 import ReviewBox from '../../components/ReviewBox'
 import CouponBox from "../../components/CouponBox";
@@ -21,13 +23,45 @@ import SpecialEventBox from "../../components/SpecialEventBox";
 import CalenderScreen from "./CalenderScreen";
 import StatusBarPlaceHolder from "../../components/StatusBarPlaceHolder"
 import moment from "moment/moment";
+
 export default function CafeScreen({route,navigation}) {
+const { width, height } = Dimensions.get("window");
     const {t} = useTranslation();
     const [normalModal,setNormalModal] = useState(false);
     const [specialModal,setSpecialModal] = useState(false);
     const [currentSpecialEvent,setCurrentSpecialEvent]= useState();
     const [selected,setSelected] = useState('view');
     const [featched,setFeatched] = useState(false);
+    const [orderModal,setorderModal] = useState(false);
+    const [photos,setPhotos] = useState([
+      {
+        "source": {
+          "uri": "https://shoutem.github.io/static/getting-started/restaurant-1.jpg"
+        },
+        "title": "Gaspar Brasserie",
+        "description": "Expect an intimate venue with the ambience of a private "
+                       + "club. The mood is casual, the guests sublime."
+      },
+      {
+        "source": {
+          "uri": "https://shoutem.github.io/static/getting-started/restaurant-2.jpg"
+        },
+        "title": "Chalk Point Kitchen",
+        "description": "Stylish restaurant serving market-to-table American fare "
+                       + "in modern farmhouse digs with cellar bar."
+      },
+      {
+        "source": {
+          "uri": "https://shoutem.github.io/static/getting-started/restaurant-3.jpg"
+        },
+        "title": "Kyoto Amber Upper East",
+        "description": "Amber Upper East is located on the corner of 80th and 3rd "
+                       + "Avenue. We serve Japanese and Asian cuisines."
+      }
+    ]);
+
+    const [widttt,setwidttt] = useState('50%');
+
     const [time, setTime] = useState(new Date());
     const [time2, setTime2] = useState(new Date());
     const [time3, setTime3] = useState(new Date());
@@ -35,11 +69,24 @@ export default function CafeScreen({route,navigation}) {
     const [show, setShow] = useState(false);
     const [show2, setShow2] = useState(false);
     const [store,setStore]= useState([]);
-
+    const [note,setNote]= useState('');
+    const [imagesModal,setimagesModal] = useState(false);
     const [persons, setPersons] = useState('1');
     const [kids, setKids] = useState('0');
     const [smoking, setSmoking] = useState('0');
     const [outt, setOutt] = useState('0');
+    var renderImageOverlay = (photos) =>{
+
+  return (
+    <ImageGalleryOverlay
+      styleName="full-screen"
+      title={photos.title}
+
+      description={photos.description}
+    />
+  );
+}
+
 
     var renderStars = ()=>{
         var gold = parseInt(store.rating);
@@ -55,20 +102,54 @@ export default function CafeScreen({route,navigation}) {
         return stars;
     }
     useEffect(()=>{
-        if(route.params.id == 0){
-            setStore(JSON.parse(route.params.item));
 
+        if(route.params.id == 0){
+          const tempp = [];
+
+            setStore(JSON.parse(route.params.item));
+             setwidttt(100/JSON.parse(route.params.item).store_images.length +'%');
+             JSON.parse(route.params.item).store_images.map((image) =>
+
+                 tempp.push({
+                   "source": {
+                     "uri": 'http://makaneapp.com/images/' + image.image
+                   },
+                   "title": "Image",
+                   "description": "Image "
+
+                 })
+             )
+             console.log(tempp)
+
+             setPhotos(tempp)
             setFetch(true);
         }
         else {
-            axios.get('http://192.168.1.2:8000/api/store', {
+            axios.get('http://makaneapp.com/api/store', {
                 params: {
                     id:route.params.id
                 }
             })
                 .then(function (response) {
+                  const tempp = [];
                     setStore(response.data.store[0]);
                     setFetch(true);
+                    setwidttt(100/response.data.store[0].store_images.length+'%');
+                    response.data.store[0].store_images.map((image) =>
+
+                        tempp.push({
+                          "source": {
+                            "uri": 'http://makaneapp.com/images/' + image.image
+                          },
+                          "title": "Image",
+                          "description": "Image "
+
+                        })
+                    )
+                    console.log(tempp)
+
+                    setPhotos(tempp)
+
 // alert('ss')
                 })
                 .catch(function (error) {
@@ -102,11 +183,88 @@ export default function CafeScreen({route,navigation}) {
         setNormalModal(false);
         setSpecialModal(false);
     }
+    var bookNormal = ()=>{
+      if(note != ''){
+        AsyncStorage.getItem('token').then((token)=>{
+            if(token) {
+                axios.post('http://makaneapp.com/api/reserve', null, {
+                    params: {
+                        store_id: store.id,
+                        type: 5,
+
+                        note
+
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then((response) => {
+                    closeModal()
+                    Toast.show({
+                        text: 'Successfully booked waiting for you ;)',
+                        buttonText: 'Okay',
+                        type: "success"
+
+                    })
+                    navigation.navigate('User', {screen: 'Calender', initial: false})
+
+                }).catch((error) => {
+                        closeModal()
+                        if (error.response.data.err == 1) {
+                            Toast.show({
+                                text: 'You are banned from booking',
+                                buttonText: 'Okay',
+                                type: "danger"
+
+                            });
+                        }
+                        else if (error.response.data.err == 2) {
+                            Toast.show({
+                                text: 'You already have active reservation',
+                                buttonText: 'Okay',
+                                type: "danger"
+
+                            })
+                        }
+                        else if (error.response.data.err == 3) {
+                            Toast.show({
+                                text: 'Sorry but some one got the last place',
+                                buttonText: 'Okay',
+                                type: "danger"
+
+                            })
+                        }
+
+                    }
+                );
+            }
+            else{
+                closeModal()
+                navigation.navigate('Auth',{screen:'Login'});
+
+                Toast.show({
+                    text: 'You need to login first',
+                    buttonText: 'Okay',
+                    type: "danger"
+
+                });
+            }
+        })
+      }
+      else {
+        Toast.show({
+            text: 'Type Note',
+            buttonText: 'Okay',
+            type: "danger"
+
+        });
+      }
+    }
 
     var reserveNormal = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
             if(token) {
-                axios.post('http://192.168.1.2:8000/api/reserve', null, {
+                axios.post('http://makaneapp.com/api/reserve', null, {
                     params: {
                         store_id: store.id,
                         type: 1,
@@ -114,14 +272,14 @@ export default function CafeScreen({route,navigation}) {
                         outt,
                         time:time3,
                         persons,
-                        kids
+                        kids,
+                        note
 
                     },
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 }).then((response) => {
-
                     closeModal()
                     Toast.show({
                         text: 'Successfully booked waiting for you ;)',
@@ -197,11 +355,12 @@ export default function CafeScreen({route,navigation}) {
     var reserveSpecial = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
             if(token) {
-                axios.post('http://192.168.1.2:8000/api/reserve', null, {
+                axios.post('http://makaneapp.com/api/reserve', null, {
                     params: {
                         store_id: store.id,
                         type: 2,
-                        SpecialEvent_id: currentSpecialEvent
+                        SpecialEvent_id: currentSpecialEvent,
+                        note
                     },
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -219,6 +378,8 @@ export default function CafeScreen({route,navigation}) {
 
                 }).catch((error) => {
                         closeModal()
+                        alert(JSON.stringify(error.response))
+
                         if (error.response.data.err == 1) {
                             Toast.show({
                                 text: 'You are banned from booking',
@@ -268,6 +429,120 @@ export default function CafeScreen({route,navigation}) {
                 renderToHardwareTextureAndroid
             >
                 <StatusBarPlaceHolder/>
+                <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={orderModal} style={{marginTop: 10}}>
+                <ScrollView>
+                    <View style={{backgroundColor: '#fff', padding: 10, borderRadius: 20}}>
+                        <Text style={{
+                            fontFamily: 'Poppins-Medium',
+                            color: '#000',
+                            fontSize: 20,
+                            paddingHorizontal: 20,
+                            paddingTop: 20
+                        }}>{t('Are you sure you want to order now!')}</Text>
+                        <Text style={{
+                            fontFamily: 'Poppins-Medium',
+                            color: '#CECDCD',
+                            fontSize: 15,
+                            padding: 20
+                        }}>{t('Give us the information about your order.')}</Text>
+
+                <Text style={{
+                    fontFamily: 'Poppins-Medium',
+                    fontSize: 12,
+                    padding: 10,
+                    textAlign: 'center'
+
+                }}>{t('Note')}</Text>
+                <Item style={{width:'100%',
+                borderRadius:10,
+                backgroundColor:'#F5F5F5',
+                alignItems:'center',
+                paddingHorizontal:30,
+                color:'#CECDCD',
+                borderColor:'#F5F5F5',
+                height:100,
+                fontFamily:'Poppins-Medium',
+                fontSize:4}} rounded>
+
+                    <Input
+                    multiline = {true}
+                    numberOfLines = {4}
+
+                     placeholder='Note' value={note} onChangeText={(value) => setNote(value)}
+                           style={{textAlign: 'center',height:200}} fontFamily='Poppins-ExtraLight' fontSize={15}
+                           placeholderTextColor="#CECDCD"
+                    />
+                </Item>
+
+                <View style={{flexDirection: 'row', justifyContent: 'center', padding: 40}}>
+                    <Button
+                        title="Press me"
+                        onPress={() => {
+                            bookNormal()
+                        }}
+                        style={styles.modalBook}
+                    >
+                        <Text style={{
+                            color: '#fff',
+                            fontFamily: 'Poppins-Medium',
+                            textAlign: 'center',
+                            fontSize: 12,
+                            textAlign: 'center'
+                        }}>{t('Order Now')} </Text>
+
+                    </Button>
+                    <Button
+                        title="Press me"
+                        onPress={() => {
+                            setorderModal(false)
+                        }}
+                        style={styles.modalCancel}
+                    >
+                        <Text style={{
+                            color: '#000',
+                            fontFamily: 'Poppins-Medium',
+                            textAlign: 'center',
+                            fontSize: 12,
+                            textAlign: 'center'
+                        }}>{t('Cancel')} </Text>
+
+                    </Button>
+
+                </View>
+                </View>
+                </ScrollView>
+                </Modal>
+
+
+                <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={imagesModal} style={{}}>
+
+
+
+                <ImageGallery
+  data={photos}
+  selectedIndex={0}
+/>
+<Button
+    onPress={() => setimagesModal(false)}
+    style={{
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        backgroundColor: '#fff',
+        top: 30,
+        left: 10,
+        justifyContent: 'center',
+        borderRadius: 130,
+        opacity:.7
+    }}
+>
+    <Ionicons name="ios-arrow-back" size={24} color="black"/>
+
+</Button>
+
+
+                </Modal>
+
 
                 <Modal animationIn="fadeIn" animationOut="fadeOut" isVisible={normalModal} style={{marginTop: 70}}>
                     <ScrollView>
@@ -395,6 +670,20 @@ export default function CafeScreen({route,navigation}) {
                                        placeholderTextColor="#CECDCD"
                                 />
                             </Item>
+                            <Text style={{
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 12,
+                                padding: 10,
+                                textAlign: 'center'
+
+                            }}>{t('Note')}</Text>
+                            <Item style={styles.searchInput} rounded>
+
+                                <Input placeholder='Note' value={note} onChangeText={(value) => setNote(value)}
+                                       style={{textAlign: 'center'}} fontFamily='Poppins-ExtraLight' fontSize={15}
+                                       placeholderTextColor="#CECDCD"
+                                />
+                            </Item>
                             {
                                 (store.smoking == 1) &&
                                 <View>
@@ -509,6 +798,20 @@ export default function CafeScreen({route,navigation}) {
                             fontSize: 15,
                             padding: 20
                         }}>{t('You can cancel your reservation 30 minutes after reserve.')}</Text>
+                        <Text style={{
+                            fontFamily: 'Poppins-Medium',
+                            fontSize: 12,
+                            padding: 10,
+                            textAlign: 'center'
+
+                        }}>{t('Note')}</Text>
+                        <Item style={styles.searchInput} rounded>
+
+                            <Input placeholder='Note' value={note} onChangeText={(value) => setNote(value)}
+                                   style={{textAlign: 'center'}} fontFamily='Poppins-ExtraLight' fontSize={15}
+                                   placeholderTextColor="#CECDCD"
+                            />
+                        </Item>
                         <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
                             <Button
                                 title="Press me"
@@ -546,10 +849,11 @@ export default function CafeScreen({route,navigation}) {
                         </View>
                     </View>
                 </Modal>
+
                 <ScrollView
                     renderToHardwareTextureAndroid
                     horizontal={true}
-                    contentContainerStyle={{width: '300%'}}
+                    contentContainerStyle={{width: store.store_images.length*100+'%'}}
                     showsHorizontalScrollIndicator={false}
                     scrollEventThrottle={200}
                     style={{position: 'absolute'}}
@@ -560,36 +864,39 @@ export default function CafeScreen({route,navigation}) {
 
                     {
                         store.store_images.map((image) =>
+                        <Lightbox>
                             <Image renderToHardwareTextureAndroid source={{
-                                uri: 'http://192.168.1.2:8000/images/' + image.image
+                                uri: 'http://makaneapp.com/images/' + image.image
                             }}
                                    style={{
-                                       width: '33.33333%',
+                                       width:width,
                                        height: 250,
                                        resizeMode: 'stretch'
                                    }}/>
+                                   </Lightbox>
+
                         )
                     }
 
-                    <Button
-                        onPress={() => navigation.goBack()}
-                        style={{
-                            position: 'absolute',
-                            width: 50,
-                            height: 50,
-                            backgroundColor: '#fff',
-                            top: 30,
-                            left: 10,
-                            justifyContent: 'center',
-                            borderRadius: 130
-                        }}
-                    >
-                        <Ionicons name="ios-arrow-back" size={24} color="black"/>
 
-                    </Button>
 
                 </ScrollView>
+                <Button
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        position: 'absolute',
+                        width: 50,
+                        height: 50,
+                        backgroundColor: '#fff',
+                        top: 30,
+                        left: 10,
+                        justifyContent: 'center',
+                        borderRadius: 130
+                    }}
+                >
+                    <Ionicons name="ios-arrow-back" size={24} color="black"/>
 
+                </Button>
                 <View renderToHardwareTextureAndroid style={styles.container}>
                     <Text style={{
                         fontFamily: 'Poppins-Medium',
@@ -673,9 +980,59 @@ export default function CafeScreen({route,navigation}) {
 
 
                                 </Button>
+
                                 <View style={styles.stars}>
 
                                     {renderStars()}
+                                </View>
+                                <TouchableOpacity
+                                onPress={()=>{
+                                    setimagesModal(true)
+                                }}
+                                  style={{flexDirection:'row'}}>
+                                <Text style={{
+                                    fontFamily: 'Poppins-Medium',
+                                    color: '#000',
+                                    fontSize: 19,
+                                    padding: 5,
+                                    alignSelf: 'flex-start',
+                                    textAlign:'left',
+                                    flex:.5
+                                }}>{t('Photos')}</Text>
+                                <Text style={{
+                                    fontFamily: 'Poppins-Medium',
+                                    color: '#E50000',
+                                    fontSize: 19,
+                                    padding: 5,
+                                    alignSelf: 'flex-end',
+                                    textAlign:'right',
+                                    flex:.5,
+                                    textDecorationLine: 'underline'
+                                }}>{t('See All')}</Text>
+                                </TouchableOpacity>
+                                <View
+                                style={{flexDirection:'row',padding:10,width:'90%',borderColor:'gray',borderWidth:1,justifyContent:'center'}}
+                                >
+                                      {
+                                    store.store_images.map((image) =>
+                                    <View>
+                                        <Image
+                                        onPress={()=>{
+                                            setimagesModal(true)
+                                        }}
+                                         source={{
+                                            uri: 'http://makaneapp.com/images/' + image.image
+                                        }}
+                                               style={{
+                                                   width:200,
+                                                   height: 100,
+                                                   padding:10,
+                                                   margin:10
+                                               }}/>
+                                               </View>
+
+                                    )
+                                }
                                 </View>
                                 {
                                     (store.special_events.length == 0)
@@ -700,7 +1057,7 @@ export default function CafeScreen({route,navigation}) {
                                         data={store.special_events}
 
                                         ListFooterComponent={() =>
-
+                                          <View style={{flexDirection:'row'}}>
                                             <Button
                                                 title="Press me"
                                                 onPress={() => {
@@ -718,12 +1075,30 @@ export default function CafeScreen({route,navigation}) {
 
 
                                             </Button>
+                                            <Button
+                                                title="Press me"
+                                                onPress={() => {
+                                                    setorderModal(true)
+                                                }}
+                                                style={styles.selectedButton2}
+                                            >
+                                                <Text style={{
+                                                    color: '#fff',
+                                                    fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' : 'Poppins-Medium',
+                                                    fontSize: 12,
+                                                    textAlign: 'center',
+                                                    alignSelf: 'center'
+                                                }}>{t('Order Now')} </Text>
+
+
+                                            </Button>
+                                            </View>
                                         }
                                         renderItem={({item}) => (
 
 
                                             <SpecialEventBox
-                                                image={'http://192.168.1.2:8000/images/' + store.image}
+                                                image={'http://makaneapp.com/images/' + store.image}
                                                 name={item.name}
                                                 time={item.time}
                                                 available={item.available}
@@ -826,7 +1201,7 @@ width:130,
 alignSelf:'center',
         justifyContent:'center',
         borderRadius:10,
-        width:'70%',
+        width:'40%',
         justifyContent:'center',
         height:45,
         margin:15,

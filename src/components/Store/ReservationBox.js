@@ -21,7 +21,7 @@ const ReservationBox: () => React$Node = (props) => {
     const  [review,setReview] = useState();
     var rate = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://192.168.1.2:8000/api/user-review',null, {
+            axios.post('http://makaneapp.com/api/user-review',null, {
                 params:{
                     user_id:props.user_id,
                     reservation_id:props.id,
@@ -159,23 +159,28 @@ const ReservationBox: () => React$Node = (props) => {
             </View>
             <View style={styles2.right}>
                 <Text style={{fontFamily:(i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('Time')}</Text>
-                <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{props.date}</Text>
+                <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{props.date}</Text>
                 <Text style={{fontFamily:(i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('User Name')}</Text>
-                <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{props.user.name}</Text>
+                <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{props.user.name}</Text>
                 <Text style={{fontFamily:(i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('User Phone')}</Text>
-                <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{props.user.phone}</Text>
+                <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{props.user.phone}</Text>
                 <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('Persons')}</Text>
-                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{props.reservation.persons}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{props.reservation.persons}</Text>
                 <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('kids')}</Text>
-                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{props.reservation.kids}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{props.reservation.kids}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('Note')}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{props.reservation.note}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('Type')}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{(props.type == 5) ? t('order') :t('reservation')}</Text>
+
                 <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('Outside')}</Text>
-                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{(props.reservation.outt == 1) ? 'yes' : 'no'}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{(props.reservation.outt == 1) ? 'yes' : 'no'}</Text>
 
                 <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{t('Smoking')}</Text>
-                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{(props.reservation.smoking == 1) ? 'yes' : 'no'}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{(props.reservation.smoking == 1) ? 'yes' : 'no'}</Text>
 
                 <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}> {t('Status')}</Text>
-                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{(props.status == 0) ? (i18n.language == 'ar') ? 'قادم' : 'comming' : (props.status == 1)  ? (i18n.language == 'ar') ? 'تم' :'done' : (props.status == 2) ? (i18n.language == 'ar') ? 'تجاهل' : 'ignored' : (i18n.language == 'ar') ? 'الغاء' : 'canceled'}</Text>
+                <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#000',fontSize:15,padding:5,alignSelf:'flex-start'}}>{(props.status == 0) ? (i18n.language == 'ar') ? 'قادم' : 'comming' : (props.status == 1)  ? (i18n.language == 'ar') ? 'تم' :'done' : (props.status == 2) ? (i18n.language == 'ar') ? 'تجاهل' : 'ignored' : (i18n.language == 'ar') ? 'الغاء' : 'canceled'}</Text>
 
                 <View >
                 {

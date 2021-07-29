@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {View,Image,StyleSheet,Alert,ScrollView,FlatList,TouchableOpacity} from 'react-native';
+import {View,Image,StyleSheet,Alert,ScrollView,FlatList,TouchableOpacity,Linking} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Container, Header, Content, Item, Input, Icon,Button,Text,Spinner } from 'native-base';
 import StoreBox from '../../components/StoreBox'
@@ -8,6 +8,7 @@ import axios from "axios/index";
 import AsyncStorage from "@react-native-community/async-storage";
 import  StatusBarPlaceHolder from '../../components/StatusBarPlaceHolder'
 import { ImageBackground,Tile,Overlay,Caption,Title } from '@shoutem/ui';
+import Carousel from 'react-native-snap-carousel';
 
 import Feather from 'react-native-vector-icons/Feather';
 import i18n from "i18next/index";
@@ -19,7 +20,11 @@ export default function HomeScreen({route,navigation}) {
     const [cafes, setCafes ] = useState([]);
     const [pool, setPool ] = useState([]);
     const [bar, setBar ] = useState([]);
+    const [carouselItems,setcarouselItems] = useState([
 
+        ]);
+        var carousel = '';
+        const [activeIndex,setactiveIndex] = useState(0);
     const [currentData,setCurrentData] = useState(restaurants);
     const [search,setSearch] = useState();
     const [update,setUpdate] = useState();
@@ -31,7 +36,10 @@ export default function HomeScreen({route,navigation}) {
         //     var lng = info.coords.latitude;
 
 // alert('amr')
-            axios.get('http://192.168.1.2:8000/api/stores', {
+axios.get('http://makaneapp.com/api/ads').then(function (response) {
+setcarouselItems(response.data.ads);
+});
+            axios.get('http://makaneapp.com/api/stores', {
                 params: {
                     search
                 }
@@ -55,6 +63,28 @@ export default function HomeScreen({route,navigation}) {
 
 
     },[update]);
+
+  var renderItem = ({item,index})=>{
+            return (
+              <TouchableOpacity
+              onPress={()=>{
+                        Linking.openURL(item.link);
+              }}>
+                <Image
+
+                                        source={{
+                              uri: item.image,
+                            }}
+                   style={{resizeMode:'cover',height:'100%',width:'100%',borderRadius: 5,
+                   height: 100,
+                   padding: 5,
+                   marginLeft: 5,
+                   marginRight: 5}}
+                />
+                </TouchableOpacity>
+
+            )
+        }
     return (
             <Container>
                 <Content>
@@ -206,7 +236,7 @@ export default function HomeScreen({route,navigation}) {
                         >
                             <View style={styles.child}>
 
-                            <Text style={{color: selected== 'pool' ? '#d6d6d6' : '#fff',fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',textAlign:'center',fontSize:18}}>{t('Pool / Beach club')}</Text>
+                            <Text style={{color: selected== 'pool' ? '#d6d6d6' : '#fff',fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',textAlign:'center',fontSize:18}}>{t('Gem / Beachclup')}</Text>
                             </View>
                         </ImageBackground>
                     </TouchableOpacity>
@@ -223,7 +253,7 @@ export default function HomeScreen({route,navigation}) {
                         >
                             <View style={styles.child}>
 
-                            <Text style={{color: selected== 'bar' ? '#d6d6d6' : '#fff',fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',textAlign:'center',fontSize:18}}>{t('Bar / Club')}</Text>
+                            <Text style={{color: selected== 'bar' ? '#d6d6d6' : '#fff',fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',textAlign:'center',fontSize:18}}>{t('other services')}</Text>
                             </View>
                         </ImageBackground>
                     </TouchableOpacity>
@@ -238,8 +268,23 @@ export default function HomeScreen({route,navigation}) {
                             renderToHardwareTextureAndroid
                             style={styles.components}
                             data={currentData}
+                            ListHeaderComponent={()=>{
+                              return(
+                                <View style={{ flex: 1, flexDirection:'row', justifyContent: 'center', }}>
+
+                                <Carousel
+                   layout={"default"}
+                   ref={ref => carousel = ref}
+                   data={carouselItems}
+                   sliderWidth={300}
+                   itemWidth={300}
+                   renderItem={renderItem}
+                    />
+                 </View>
+               )
+                            }}
                             ListEmptyComponent={()=>
-                                <Text style={{color:  '#000',fontFamily:'Poppins-Medium',textAlign:'center',fontSize:15}}>No Data</Text>
+                                <Text style={{color:  '#000',fontFamily:'Poppins-Medium',textAlign:'center',fontSize:15}}>Comming soon</Text>
                             }
                             renderItem={({ item }) => (
                                 <TouchableOpacity onPress={()=>{
@@ -251,7 +296,7 @@ export default function HomeScreen({route,navigation}) {
                                     <StoreBox
                                         name={item.name}
                                         description={item.description_en}
-                                        image={'http://192.168.1.2:8000/images/'+item.image}
+                                        image={'http://makaneapp.com/images/'+item.image}
                                         available={item.available}
                                         rate={item.rating}
                                     />

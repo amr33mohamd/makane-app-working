@@ -86,8 +86,26 @@ const resources = {
             "Amount":"المبلغ",
             "Pay":"الدفع",
             "Scan Coupon":'فحص خصم',
-            "Arrived":"وصل"
-
+            "Arrived":"وصل",
+            "Bar / Club":"نادي / بار",
+            "Pool / Beach club":'نادي شاطئ / حمام سباحه',
+            "Settings":"الاعدادات",
+            "Edit Account & profile":"تعديل المعلومات الشخصيه & الصفحه الشخصيه",
+            "Contact Us":"تواصل معنا",
+            "Logout":"تسجيل الخروج",
+            "Note":"ملاحظات",
+            "Persons":'عدد الاشخاص',
+            "Outside":'ب الخارج',
+            "Smoking":'تدخين',
+            "kids":'اطفال',
+            "Type":'النوع',
+            "reservation":'حجز',
+            "order":'طلب',
+            "See All":'مشاهده الكل',
+            "Photos":'الصور',
+            "Order Now":'اطلب الان',
+            "Gem / Beachclup":'صالات رياضيه / نادي شاطئ',
+            "other services":'خدمات اخري'
 
         }
     }

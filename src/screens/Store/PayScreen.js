@@ -17,7 +17,7 @@ export default function PayScreen({route,navigation}) {
     const [update,setUpdate] = useState(false);
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://192.168.1.2:8000/api/user',null, {
+            axios.post('http://makaneapp.com/api/user',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -86,7 +86,7 @@ export default function PayScreen({route,navigation}) {
         return (
 
             <WebView
-                source={{ uri: 'http://192.168.1.2:8000/api/pay-month?id='+route.params.id }}
+                source={{ uri: 'http://makaneapp.com/api/pay-month?id='+route.params.id }}
                 style={{ marginTop: 20 }}
                 onNavigationStateChange={(event) => {
                     if (event.url == 'http://example.com') {

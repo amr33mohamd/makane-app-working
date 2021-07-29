@@ -61,7 +61,7 @@ import i18n from "i18next";
         </Modal>
         <View style={styles2.left}>
             <Image  source={{
-                uri: 'http://192.168.1.2:8000/images/'+props.image}}
+                uri: 'http://makaneapp.com/images/'+props.image}}
             style={{
                 width:'100%',
                 height:70,

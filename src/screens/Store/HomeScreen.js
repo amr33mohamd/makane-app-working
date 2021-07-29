@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import ImagePicker from 'react-native-image-picker';
 import i18n from "i18next";
 import RNRestart from 'react-native-restart'; // Import package from node modules
+import messaging from '@react-native-firebase/messaging';
 
 export default  function HomeScreen({navigation}) {
     const { t } = useTranslation();
@@ -37,7 +38,7 @@ export default  function HomeScreen({navigation}) {
     };
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://192.168.1.2:8000/api/user',null, {
+            axios.post('http://makaneapp.com/api/user',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -65,7 +66,7 @@ export default  function HomeScreen({navigation}) {
 
    var deleteImage= (id)=>{
        AsyncStorage.getItem('token').then((token)=>{
-           axios.post('http://192.168.1.2:8000/api/delete-image',null, {
+           axios.post('http://makaneapp.com/api/delete-image',null, {
                 params:{
                     id
                 },
@@ -112,7 +113,7 @@ export default  function HomeScreen({navigation}) {
 
 
                 axios({
-                    url:'http://192.168.1.2:8000/api/upload-image',
+                    url:'http://makaneapp.com/api/upload-image',
                     method:'POST',
                     headers:{
                         'Content-Type':'multipart/form-data'
@@ -158,7 +159,7 @@ export default  function HomeScreen({navigation}) {
 // alert(JSON.stringify(data))
 
                     axios({
-                        url:'http://192.168.1.2:8000/api/add-image',
+                        url:'http://makaneapp.com/api/add-image',
                         method:'POST',
                         headers:{
                             'Authorization': `Bearer ${token}`,
@@ -194,7 +195,7 @@ export default  function HomeScreen({navigation}) {
         AsyncStorage.getItem('token').then((token)=> {
 
             if ( name != '') {
-                axios.post('http://192.168.1.2:8000/api/update_user', null, {
+                axios.post('http://makaneapp.com/api/update_user', null, {
                     params: {
                         email, password, name,description_ar,description_en,
                         available:(available2 != null) ? available2 : persons,image:formMainImage,smoking,outt
@@ -235,6 +236,8 @@ export default  function HomeScreen({navigation}) {
     var logout = ()=>{
         AsyncStorage.removeItem('token');
         navigation.navigate('Auth',{screen:'Login'});
+        messaging().unsubscribeFromTopic(''+user.id);
+
     }
 
     return (
@@ -305,7 +308,7 @@ export default  function HomeScreen({navigation}) {
                             )
                             :
                             <Image
-                                source={{ uri: 'http://192.168.1.2:8000/images/'+user.image }}
+                                source={{ uri: 'http://makaneapp.com/images/'+user.image }}
                                 style={{ width: 100, height: 100,margin:10,resizeMode:'contain' }}
                             />
                         }
@@ -332,7 +335,7 @@ export default  function HomeScreen({navigation}) {
                         }}>{t('Upload intro image')}</Text>
                     </Button>
                 </View>
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',padding:10 }}>
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',padding:10 }} renderToHardwareTextureAndroid>
                         <ScrollView
                             renderToHardwareTextureAndroid
                             horizontal={true}
@@ -349,7 +352,7 @@ export default  function HomeScreen({navigation}) {
 
                                             (<View>
                                                 <Image
-                                                    source={{uri: 'http://192.168.1.2:8000/images/' + image.image}}
+                                                    source={{uri: 'http://makaneapp.com/images/' + image.image}}
                                                     style={{flex: .3, height: 100, margin: 10}}
                                                 />
 
@@ -679,4 +682,3 @@ const styles = StyleSheet.create({
 
     }
 });
-

@@ -5,6 +5,7 @@ import { Container, Header, Content, Item, Input, Icon,Button,Text,Label,Toast }
 import StoreBox from '../../components/StoreBox'
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function PhoneScreen({route,navigation}) {
     const { t } = useTranslation();
@@ -18,7 +19,7 @@ export default function PhoneScreen({route,navigation}) {
 
 
             if (phone != '') {
-                axios.post('http://192.168.1.2:8000/api/add-phone',null, {
+                axios.post('http://makaneapp.com/api/add-phone',null, {
                     params: {
                         phone,
                         code
@@ -65,9 +66,24 @@ export default function PhoneScreen({route,navigation}) {
             <Content>
 
                 <View style={{  alignItems: 'center'}}>
+                <Button
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        position: 'absolute',
+                        width: 50,
+                        height: 50,
+                        backgroundColor: '#fff',
+                        left: 10,
+                        justifyContent: 'center',
+                        borderRadius: 130
+                    }}
+                >
+                    <Ionicons name="ios-arrow-back" size={24} color="black"/>
+
+                </Button>
                     <Image
                         style={styles.stretch}
-                        source={require('../../Assets/Images/verify.png')}
+                        source={require('../../Assets/Images/signup.png')}
                     />
 
                 </View>
@@ -211,4 +227,3 @@ const styles = StyleSheet.create({
 
     }
 });
-

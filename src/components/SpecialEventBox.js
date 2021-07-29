@@ -25,7 +25,7 @@ const SpecialEventBox: () => React$Node = (props) => {
             </View>
             <View style={styles2.right}>
                 <Text style={{fontFamily:'Poppins-Medium',color:'#000',fontSize:13,padding:5,alignSelf:'flex-start'}}>{props.name}</Text>
-                <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{moment(props.time,'hh:mm:ss').calendar() }</Text>
+                <Text style={{fontFamily:'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{moment(props.time,'YYYY-MM-DD hh:mm:ss').calendar() }</Text>
                 <Text style={{fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',color:'#CECDCD',fontSize:11,padding:5,alignSelf:'flex-start'}}>{props.available } {t('Person')}</Text>
 
 

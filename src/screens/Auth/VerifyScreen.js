@@ -5,6 +5,7 @@ import { Container, Header, Content, Item, Input, Icon,Button,Text,Label,Toast }
 import StoreBox from '../../components/StoreBox'
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function VerifyScreen({route,navigation}) {
     const { t } = useTranslation();
@@ -16,7 +17,7 @@ export default function VerifyScreen({route,navigation}) {
 
 
             if (code != '') {
-                axios.post('http://192.168.1.2:8000/api/verify',null, {
+                axios.post('http://makaneapp.com/api/verify',null, {
                     params: {
                         code
                         // id: JSON.parse(route.params.data).user.id
@@ -59,6 +60,21 @@ export default function VerifyScreen({route,navigation}) {
             <Content>
 
                 <View style={{  alignItems: 'center'}}>
+                <Button
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        position: 'absolute',
+                        width: 50,
+                        height: 50,
+                        backgroundColor: '#fff',
+                        left: 10,
+                        justifyContent: 'center',
+                        borderRadius: 130
+                    }}
+                >
+                    <Ionicons name="ios-arrow-back" size={24} color="black"/>
+
+                </Button>
                     <Image
                         style={styles.stretch}
                         source={require('../../Assets/Images/verify.png')}
@@ -187,4 +203,3 @@ const styles = StyleSheet.create({
 
     }
 });
-

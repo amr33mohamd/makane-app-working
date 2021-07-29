@@ -5,6 +5,8 @@ import { Container, Header, Content, Item, Input, Icon,Button,Text,Label,Toast }
 import StoreBox from '../../components/StoreBox'
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import messaging from '@react-native-firebase/messaging';
 
 export default function SignUpScreen({route,navigation}) {
     const { t } = useTranslation();
@@ -25,15 +27,20 @@ export default function SignUpScreen({route,navigation}) {
 
    var submit = () =>{
        if(email != '' && password != '' && password != '' && phone != '20'){
-           axios.get('http://192.168.1.2:8000/api/signup', {
+           axios.get('http://makaneapp.com/api/signup', {
                params: {
                    email, password, phone, name, country: 'kkk',code
                }
            })
                .then(function (response) {
+                 messaging().subscribeToTopic(''+response.data.user.id);
+
+                 navigation.reset({
+                     index: 0,
+                     routes: [{name: 'User'}],
+                 });
+                 AsyncStorage.setItem('type','1');
                    AsyncStorage.setItem('token',response.data.token);
-                    AsyncStorage.setItem('type','3');
-                   navigation.navigate('Verify',{'data':JSON.stringify(response.data)})
                })
                .catch(function (error) {
                 // alert(JSON.stringify(error.response))
@@ -57,6 +64,21 @@ export default function SignUpScreen({route,navigation}) {
             <Content>
 
                 <View style={{  alignItems: 'center'}}>
+                <Button
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        position: 'absolute',
+                        width: 50,
+                        height: 50,
+                        backgroundColor: '#fff',
+                        left: 10,
+                        justifyContent: 'center',
+                        borderRadius: 130
+                    }}
+                >
+                    <Ionicons name="ios-arrow-back" size={24} color="black"/>
+
+                </Button>
                     <Image
                         style={styles.stretch}
                         source={require('../../Assets/Images/signup.png')}
@@ -235,4 +257,3 @@ const styles = StyleSheet.create({
 
     }
 });
-

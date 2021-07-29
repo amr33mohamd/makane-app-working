@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react';
-import {View,Image,StyleSheet,Alert,ScrollView,I18nManager,TouchableOpacity} from 'react-native';
+import {View,Image,StyleSheet,Alert,ScrollView,I18nManager} from 'react-native';
 import { useTranslation } from 'react-i18next';
-import {Container, Header, Content, Item, Input, Icon, Button, Text, Label, Toast,List,ListItem,Right,Left} from 'native-base';
+import {Container, Header, Content, Item, Input, Icon, Button, Text, Label, Toast} from 'native-base';
 import StoreBox from '../../components/StoreBox'
 import RNRestart from 'react-native-restart'; // Import package from node modules
 import  StatusBarPlaceHolder from '../../components/StatusBarPlaceHolder'
@@ -10,22 +10,18 @@ import axios from "axios/index";
 import AsyncStorage from "@react-native-community/async-storage";
 import i18n from "i18next/index";
 import {useIsFocused} from "@react-navigation/native";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import messaging from '@react-native-firebase/messaging';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-export default function ProfileScreen({navigation}) {
+export default function ContactScreen({navigation}) {
     const {t} = useTranslation();
     const [name, setName] = useState();
     const [email, setEmail] = useState();
     const [code, setCode] = useState();
     const [points, setPoints] = useState();
-    const [password, setPassword] = useState();
+    const [message, setMessage] = useState();
     const [token, setToken] = useState();
     const isFocused = useIsFocused()
-    const [user,setUser] = useState();
+
     const [errors, setErrors] = useState({});
 
     const [update, setUpdate] = useState(false);
@@ -36,14 +32,13 @@ export default function ProfileScreen({navigation}) {
             })
             if (token) {
 
-                axios.post('http://makaneapp.com/api/user', null, {
+                axios.post('http://makaneapp.com/api/contact', null, {
 
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 })
                     .then(function (response) {
-                        setUser(response.data.user);
                         setName(response.data.user.name);
                         setCode(response.data.user.invite_code)
                         setPoints(response.data.user.points)
@@ -59,19 +54,14 @@ export default function ProfileScreen({navigation}) {
             }
         });
     }, [update,isFocused]);
-    var logout = () => {
-        AsyncStorage.removeItem('token');
-        AsyncStorage.removeItem('type');
 
-        navigation.navigate('Auth', {screen: 'Login'});
-    }
     var submit = () => {
         AsyncStorage.getItem('token').then((token) => {
 
-            if (name != '') {
-                axios.post('http://makaneapp.com/api/update_user', null, {
+            if (email != '') {
+                axios.post('http://makaneapp.com/api/contact', null, {
                     params: {
-                        email, password, name
+                        email, message
                     },
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -81,17 +71,18 @@ export default function ProfileScreen({navigation}) {
                         setUpdate(!update);
                         setErrors({});
                         Toast.show({
-                            text: 'successfully updated your data',
+                            text: 'Thanks for contacting us we will reply ASAP ',
                             buttonText: 'Okay',
                             type: "success"
 
                         })
+                        navigation.navigate('User');
                         // alert(JSON.stringify(response))
 
                     })
                     .catch(function (error) {
-                        // alert(JSON.stringify(error.response))
-                        setErrors(error.response.data.errors)
+                        alert(JSON.stringify(error.response))
+                        // setErrors(error.response.data.errors)
 
                     });
             }
@@ -109,7 +100,6 @@ export default function ProfileScreen({navigation}) {
     var logout = () => {
         AsyncStorage.removeItem('token');
         AsyncStorage.removeItem('type');
-        messaging().unsubscribeFromTopic(''+user.id);
 
         navigation.navigate('Auth', {screen: 'Login'});
     }
@@ -119,102 +109,105 @@ export default function ProfileScreen({navigation}) {
         <Container>
             <Content>
 
-            <View  style={{    height:220,width:'100%',justifyContent:'flex-start',flexDirection:'column'}}>
-    <Image
-        style={styles.stretch}
-        source={require('../../Assets/Images/test.jpg')}
-        style={{resizeMode:'cover',height:'100%',width:'100%'}}
-    />
+                <View style={{alignItems: 'center'}}>
+                    <Image
+                        style={styles.stretch}
+                        source={require('../../Assets/Images/verify.png')}
+                    />
+                    <Button
+                        onPress={() => navigation.goBack()}
+                        style={{
+                            position: 'absolute',
+                            width: 50,
+                            height: 50,
+                            backgroundColor: '#fff',
+                            top: 30,
+                            left: 10,
+                            justifyContent: 'center',
+                            borderRadius: 130
+                        }}
+                    >
+                        <Ionicons name="ios-arrow-back" size={24} color="black"/>
 
-</View>
+                    </Button>
+                </View>
 
                 <View style={styles.container}>
-                <ListItem itemDivider>
-                <Text style={{
-                    fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',
-                    fontSize: 19,
-                    padding: 10,
-                    textAlign: 'center'
-                }}>{t('Settings')}</Text>
-</ListItem>
 
-                <List>
-           <ListItem button                         onPress={() => {navigation.navigate('EditScreen')}}
->
-             <Left>
-             <Text style={{
-                 fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',
-                 fontSize: 13,
-                 padding: 10,
-                 textAlign: 'center'
-             }}>{t('Edit Account & profile')}</Text>
-               </Left>
-             <Right>
-<MaterialIcons name="edit" size={24} color="black" />
-             </Right>
-           </ListItem >
-           <ListItem button                         onPress={() => {navigation.navigate('ContactScreen')}}>
-            <Left>
-            <Text style={{
-                fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',
-                fontSize: 13,
-                padding: 10,
-                textAlign: 'center'
-            }}>{t('Contact Us')}</Text>
-                         </Left>
-             <Right>
-<SimpleLineIcons name="envelope" size={24} color="black" />
-             </Right>
-           </ListItem>
 
-           <ListItem button onPress={() => {
-               if(i18n.language == 'ar'){
-                   AsyncStorage.setItem('lang','en');
-                   i18n.changeLanguage ('en');
-                   I18nManager.forceRTL(false);
 
-                   RNRestart.Restart();
 
-               }
-               else {
-                   AsyncStorage.setItem('lang','ar');
-                   i18n.changeLanguage ('ar');
-                   I18nManager.forceRTL(true);
 
-                   RNRestart.Restart();
 
-               }
+                    <Text style={{
+                        fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 12,
+                        padding: 10,
+                        textAlign: 'center'
+                    }}>{t('Email')}</Text>
+                    <Item style={styles.searchInput} rounded>
 
-           }} >
+                        <Input placeholder={t('Email')} value={email} onChangeText={(value) => setEmail(value)}
+                               style={{textAlign: 'center'}} fontFamily='Poppins-ExtraLight' fontSize={15}
+                               placeholderTextColor="#CECDCD"
+                        />
+                    </Item>
+                    {
+                        errors.email && <Text style={{
+                            fontFamily: 'Poppins-Medium',
+                            fontSize: 12,
+                            padding: 10,
+                            textAlign: 'center',
+                            color: '#E50000'
+                        }}>{errors.email}</Text>
+                    }
 
-           <Left>
-           <Text style={{
-             fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',
-             fontSize: 13,
-             padding: 10,
-             textAlign: 'center'
-           }}>{ (i18n.language == 'ar') ? 'English' : 'Arabic'}</Text>
-                        </Left>
-             <Right>
-<MaterialIcons name="g-translate" size={24} color="black" />
-            </Right>
-           </ListItem>
+                    <Text style={{
+                        fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 13,
+                        fontSize: 12,
+                        padding: 10,
+                        textAlign: 'center'
+                    }}>{t('Message')}</Text>
+                    <Item style={styles.searchInput2} rounded>
 
-           <ListItem button                         onPress={() => logout()}
->
-           <Left>
-           <Text style={{
-               fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',
-               fontSize: 13,
-               padding: 10,
-               textAlign: 'center'
-           }}>{t('Logout')}</Text>
-                        </Left>
-             <Right>
-<MaterialCommunityIcons name="logout" size={24} color="black" />
-             </Right>
-           </ListItem>
-         </List>
+                        <Input  placeholder={t('Message')} value={message} multiline={true}
+                               onChangeText={(value) => setMessage(value)} style={{textAlign: 'center',height:100}}
+                               fontFamily='Poppins-ExtraLight' fontSize={15} placeholderTextColor="#CECDCD"
+                        />
+                    </Item>
+                    {
+                        errors.password && <Text style={{
+                            fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 13,
+                            fontSize: 12,
+                            padding: 10,
+                            textAlign: 'center',
+                            color: '#E50000'
+                        }}>{errors.password}</Text>
+                    }
+
+
+
+                </View>
+                <View style={{
+                    alignItems: 'center',
+                    padding: 20,
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <Button
+                        title="Press me"
+                        onPress={() => submit()}
+                        style={styles.selectedButton}
+                    >
+                        <Text style={{
+                            color: '#fff',
+                            fontFamily: (i18n.language == 'ar') ? 'Tajawal-Regular' :'Poppins-Medium',                        fontSize: 13,
+                            textAlign: 'center',
+                            fontSize: 15
+                        }}>{t('Send')}</Text>
+
+                    </Button>
+
                 </View>
             </Content>
 
@@ -276,6 +269,8 @@ const styles = StyleSheet.create({
     container: {
         borderRadius:40,
         textAlign:'left',
+        alignItems:'center',
+        alignSelf:'center'
     },
     searchInput:{
         width:'90%',
@@ -286,6 +281,19 @@ const styles = StyleSheet.create({
         color:'#CECDCD',
         borderColor:'#F5F5F5',
         height:45,
+        fontFamily:'Poppins-Medium',
+        fontSize:4,
+        textAlign:'center'
+    },
+    searchInput2:{
+        width:'90%',
+        borderRadius:10,
+        backgroundColor:'#F5F5F5',
+        alignItems:'center',
+        paddingHorizontal:30,
+        color:'#CECDCD',
+        borderColor:'#F5F5F5',
+        height:100,
         fontFamily:'Poppins-Medium',
         fontSize:4,
         textAlign:'center'

@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { LoginButton, AccessToken,GraphRequest,GraphRequestManager,LoginManager } from 'react-native-fbsdk';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import messaging from '@react-native-firebase/messaging';
 
 import {
     GoogleSignin,
@@ -22,16 +23,20 @@ export default function LoginScreen({route,navigation}) {
     const [user,setUser] = useState();
     const [error,setError] = useState();
     const [login,setLogin] = useState('0');
+    const [google,setGoogle] = useState('0');
+
      useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
             if(token){
                 navigation.navigate('User');
             }
         })
-         axios.get('http://192.168.1.2:8000/api/settings',null, {
+         axios.get('http://makaneapp.com/api/settings',null, {
 
          }).then((value)=>{
              setLogin(''+value.data.settings[2].value)
+             setGoogle(''+value.data.settings[3].value)
+
          })
 
 
@@ -39,6 +44,7 @@ export default function LoginScreen({route,navigation}) {
     //http://10.0.2.2:8000
 
     var fb = () =>{
+      LoginManager.setLoginBehavior("web_only")
 
         LoginManager.logInWithPermissions(['public_profile']).then(
             function(result) {
@@ -61,8 +67,17 @@ export default function LoginScreen({route,navigation}) {
         );
 
     }
-    GoogleSignin.configure();
-    var signIn = async () => {
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
+      webClientId: '327886044350-hs06gobmm6t2publ6930svqh2hcf346b.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      // hostedDomain: '', // specifies a hosted domain restriction
+      // loginHint: '', // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
+      forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+    //  accountName: '', // [Android] specifies an account name on the device that should be used
+    //  iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+    });
+            var signIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
@@ -84,19 +99,23 @@ export default function LoginScreen({route,navigation}) {
         if (error) {
             alert('Error fetching data: ' + error.toString());
         } else {
-            submitSocial(result.id);
+          // alert(JSON.stringify(result))
+          // alert(JSON.stringify(result));
+            submitSocial(result.name+'@facebook.com');
         }
     }
 
     var submitSocial = (email) =>{
 
-            axios.post('http://192.168.1.2:8000/api/social-login',null, {
+            axios.post('http://makaneapp.com/api/social-login',null, {
                 params: {
                     email,
                 }
             })
                 .then(function (response) {
                     // alert(JSON.stringify(response))
+                    messaging().subscribeToTopic(''+response.data.user.id);
+
                     AsyncStorage.setItem('token',response.data.token);
                     if(response.data.status == 1 ){
                         navigation.navigate('User');
@@ -129,19 +148,23 @@ export default function LoginScreen({route,navigation}) {
 
     var submit = () =>{
         if(email != '' && password != '' ){
-            axios.post('http://192.168.1.2:8000/api/login',null, {
+            axios.post('http://makaneapp.com/api/login',null, {
                 params: {
                     email, password
                 }
             })
                 .then(function (response) {
                     AsyncStorage.setItem('token',response.data.token);
+                    messaging().subscribeToTopic(''+response.data.user.id);
+                    // alert(response.data.user.id);
+
                     if(response.data.user.type == 1 ){
                         navigation.navigate('User');
                         AsyncStorage.setItem('type','1');
 
                     }
                     else {
+                      // alert(response.data.user.id);
                         navigation.navigate('Store');
                         AsyncStorage.setItem('type','2');
 
@@ -185,6 +208,9 @@ export default function LoginScreen({route,navigation}) {
                         (login == '1')
                         ?
                             <View style={{flexDirection:'row'}}>
+                            {
+
+                            (google == 1)?
                                 <Button
                                     title="Press me"
                                     onPress={() => {signIn()}}
@@ -193,6 +219,8 @@ export default function LoginScreen({route,navigation}) {
                                     <Text style={{color:'#fff' ,fontFamily:'Poppins-Medium',textAlign:'center',fontSize:15}}><AntDesign name="google" size={20} style={{color:'#fff',textAlign:'center',fontSize:16}}/>{t(' Google')}</Text>
 
                                 </Button>
+                                :null
+                              }
                                 <Button
                                     title="Press me"
                                     onPress={() => {fb()}}
@@ -348,4 +376,3 @@ const styles = StyleSheet.create({
 
     }
 });
-

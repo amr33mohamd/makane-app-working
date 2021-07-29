@@ -23,7 +23,11 @@ export default function EventsScreen({navigation}) {
     const [addImage,setAddImage] = useState();
     const [addModal,setAddModal] = useState(false);
     const [time, setTime] = useState(new Date());
+    const [time2, setTime2] = useState(new Date());
+    const [time3, setTime3] = useState(new Date());
     const [show, setShow] = useState(false);
+    const [show2, setShow2] = useState(false);
+
     const [name,setName] = useState();
     const [deleteModal,setDeleteModal] =useState(false);
     const [deleteId,setDeleteId] = useState();
@@ -37,7 +41,7 @@ export default function EventsScreen({navigation}) {
     useEffect(()=>{
         AsyncStorage.getItem('token').then((token)=>{
 
-            axios.post('http://192.168.1.2:8000/api/user',null, {
+            axios.post('http://makaneapp.com/api/user',null, {
 
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -58,10 +62,24 @@ export default function EventsScreen({navigation}) {
     },[update]);
 
 
-    const onChange = (event, selectedDate) => {
-        const currentDate = selectedDate;
+    const onChange = async (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+
         setShow(false);
+
         setTime(currentDate);
+        setTime3(currentDate);
+
+
+    };
+    const onChange2 = (event, selectedDate2) => {
+        setShow2(false);
+      const date2 =  moment(time).format('YYYY-MM-DD')
+      const  time2 = moment(selectedDate2).format("hh:mm")
+        // alert(date);
+        // alert(moment(date2 + ' ' + time2).format('DD MM YYYY hh:mm:ss'));
+      setTime3(moment(date2 + ' ' + time2).format());
+        // setTime(currentDate);
     };
 
     const showTimepicker = () => {
@@ -71,11 +89,11 @@ export default function EventsScreen({navigation}) {
 
     var add_event = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://192.168.1.2:8000/api/add-event',null, {
+            axios.post('http://makaneapp.com/api/add-event',null, {
                 params:{
                     name,
                     available
-                    ,time:moment(time).format('HH:MM:SS')
+                    ,time:time3
                 },
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -98,14 +116,16 @@ export default function EventsScreen({navigation}) {
                 })
                 .catch(function (error) {
 
-                    // alert(JSON.stringify(error))
+                    alert(JSON.stringify(error))
                 });
         });
     }
-
+    const showTimepicker2 = () => {
+        setShow2(true);
+    };
     var delete_event = ()=>{
         AsyncStorage.getItem('token').then((token)=>{
-            axios.post('http://192.168.1.2:8000/api/delete-event',null, {
+            axios.post('http://makaneapp.com/api/delete-event',null, {
                 params:{
                     id:deleteId
 
@@ -221,17 +241,57 @@ export default function EventsScreen({navigation}) {
                                 color:'#fff',
                                 alignSelf:'center'
 
-                            }}>{t('Select Time')}</Text>
+                            }}>{t('Select Date')}</Text>
                         </Button>
 
                         {show && (
                             <DateTimePicker
                                 testID="dateTimePicker"
                                 value={time}
+                                mode={'datetime'}
+                                is24Hour={false}
+                                display="default"
+                                onChange={onChange}
+                            />
+                        )}
+
+                        {
+                            (Platform.OS == 'android')
+                            &&
+                            <Button title="Choose Photo" style={{
+                                backgroundColor: '#E50000',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderRadius: 50,
+                                shadowOpacity: 0.3,
+                                shadowRadius: 5,
+                                shadowColor: '#E50000',
+                                shadowOffset: {height: 0, width: 0},
+                                margin: 10,
+                                alignSelf: 'center'
+
+                            }} onPress={showTimepicker2}>
+                                <Text style={{
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 12,
+                                    padding: 10,
+                                    textAlign: 'center',
+                                    color: '#fff',
+                                    alignSelf: 'center'
+
+                                }}>{t('Select Time')}</Text>
+                            </Button>
+
+
+                        }
+                        {show2 && (
+                            <DateTimePicker
+                                testID="dateTimePicker"
+                                value={time2}
                                 mode={'time'}
                                 is24Hour={false}
-                                display="clock"
-                                onChange={onChange}
+                                display="default"
+                                onChange={onChange2}
                             />
                         )}
                         <View style={{flexDirection:'row',margin:10,justifyContent:'center'}}>
@@ -439,4 +499,3 @@ const styles = StyleSheet.create({
 
     },
 });
-

@@ -10,6 +10,11 @@ import {useTranslation} from "react-i18next/src/index";
 import AsyncStorage from '@react-native-community/async-storage';
 import LoadingScreen from "../screens/LoadingScreen";
 import CafeScreen from "../screens/User/CafeScreen";
+import EditScreen from "../screens/User/EditScreen";
+import ContactScreen from "../screens/User/ContactScreen";
+import ImagesScreen from "../screens/User/ImagesScreen";
+
+
 import Store from "./StoreStack";
 import PayScreen from "../screens/Store/PayScreen";
 
@@ -31,6 +36,7 @@ export default function RootNavigation() {
             <Root>
                 <NavigationContainer linking={linking}>
                     <Stack.Navigator  >
+
                         <Stack.Screen name="Loading" component={LoadingScreen} options={{headerShown:false,title:t('Home')}}/>
 
 
@@ -38,9 +44,12 @@ export default function RootNavigation() {
 
                         <Stack.Screen name="Auth" component={Auth} options={{headerShown:false,title:t('Home')}} />
                         <Stack.Screen name="CafeScreen" component={CafeScreen} options={{headerShown:false,title:t('CafeScreen')}} />
+                        <Stack.Screen name="EditScreen" component={EditScreen} options={{headerShown:false,title:t('EditScreen')}} />
+                        <Stack.Screen name="ContactScreen" component={ContactScreen} options={{headerShown:false,title:t('EditScreen')}} />
 
                         <Stack.Screen name="Store" component={Store} options={{headerShown:false,title:t('CafeScreen')}} />
                         <Stack.Screen name="PayScreen" component={PayScreen} options={{headerShown:false,title:t('PayScreen')}} />
+                        <Stack.Screen name="ImagesScreen" component={ImagesScreen} options={{headerShown:false,title:t('ImagesScreen')}} />
 
 
 
